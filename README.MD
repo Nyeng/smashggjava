@@ -1,5 +1,7 @@
 Only a sample project for learning purposes
 
+Postman link: https://www.getpostman.com/collections/a550ff666688fdfa75b3
+
 Ideas:
 * Creating a full API Service using smash.gg's API
 * Chess ranking algorithm? 
@@ -13,24 +15,34 @@ MVPS:
 * Én enkelt turneringsserie i første omgang
 
 
+Shortly explained:
+Use tournament slug to find: 
+- event id, which you use to find groups, which in turn you use to find: 
+phase groups: https://api.smash.gg/tournament/groups/phase_group/phaseGroupId
+
+Then expand the phase group with entrants and sets to iterate wins/losses:
+https://api.smash.gg//phase_group/208986?expand[]=sets&expand[]=entrants
+
+
 Tourney series:
 https://api.smash.gg/tournament/house-of-smash-31 (Fetch tournament slug from webpage URL)
 
 Get all events for one series:
-https://api.smash.gg/tournament/house-of-smash-31?expand[]=event
+https://api.smash.gg/tournament/house-of-smash-37?expand[]=event
+
 
 Expand on: 
 - phase: &expand[]=phase
 - groups: &expand[]=groups
 
 Events:
-https://api.smash.gg/tournament/house-of-smash-31/event/melee-singles
+https://api.smash.gg/tournament/house-of-smash-37/event/melee-singles
 expands on:
 - phase
 - groups
 
 Examples:
-https://api.smash.gg/tournament/house-of-smash-31/event/melee-singles?expand[]=phase&expand[]=groups
+https://api.smash.gg/tournament/house-of-smash-37/event/melee-singles?expand[]=phase&expand[]=groups
 
 **Phase groups:**
 
@@ -51,6 +63,11 @@ https://api.smash.gg/phase_group/208986?expand[]=sets
 
 objectclasses.Player:
 https://api.smash.gg/player/10627
+
+**No way to iterate players for brackets**
+Generate a rank score for a player based on wins vs other entrants. 
+- create an array of entrant id-s for a player.
+- 
 
 
 **Technicalities**
