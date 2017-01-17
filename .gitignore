@@ -1,3 +1,4 @@
 .idea
-Smashggjavareader.iml
 **/target/
+jsonparser.iml
+*.iml
