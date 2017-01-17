@@ -32,7 +32,8 @@ expands on:
 Examples:
 https://api.smash.gg/tournament/house-of-smash-31/event/melee-singles?expand[]=phase&expand[]=groups
 
-Phase groups:
+**Phase groups:**
+
 https://api.smash.gg/phase_group/phaseGroupId
 
 https://api.smash.gg/phase_group/208986
@@ -45,6 +46,7 @@ Expands on:
 Example: https://api.smash.gg/phase_group/208986?expand[]=sets&expand[]=standings&expand[]=standings
 
 Iterate all sets played for a phase group? 
+
 https://api.smash.gg/phase_group/208986?expand[]=sets
 
 objectclasses.Player:
