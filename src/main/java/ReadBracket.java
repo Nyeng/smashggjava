@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,28 +13,18 @@ import org.json.JSONObject;
 public class ReadBracket extends ConsumeApi {
 
     private JSONObject jsonobject;
+    private HashMap<String, String> playerIdsMappedToEntrantIds;
+
 
     public static void main(String[]args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
-//        String json = readbracket.consumeApi("/phase_group/208986?expand[]=sets");
-//
-//        JSONArray sets = readbracket.returnSetsObjects();
-//        readbracket.iterateSets(sets);
 
         List<String> phasegroupids = readbracket.returnPhaseGroupIds();
-        readbracket.returnPhaseGroups(phasegroupids);
+        readbracket.iterateGroups(phasegroupids);
 
-
+        //NOt using this one for now, but might come in use laterreadbracket.iteratePhases();
     }
 
-    public JSONArray returnSetsObjects() throws Exception {
-        String json = consumeApi("/phase_group/208986?expand[]=sets");
-
-        JSONObject jsonobject = new JSONObject(json);
-        JSONArray sets = jsonobject.getJSONObject("entities").getJSONArray("sets");
-
-        return sets;
-    }
 
     public void iterateSets(JSONArray sets) throws JSONException {
 
@@ -52,21 +44,51 @@ public class ReadBracket extends ConsumeApi {
 
             System.out.println("\n");
         }
-
     }
 
+    //TODO: not using this one but might get handy later
+    public void iteratePhases() throws Exception {
+        String apiPath = "/tournament/house-of-smash-38/event/melee-singles?expand[]=phase"; // returns 3 phases
+        String json = consumeApi(apiPath);
 
-    public void mapParticipantIdToPlayerId(){
-        // https://api.smash.gg//tournament/house-of-smash-38/event/melee-singles?expand[]=groups&expand[]=entrants
+        jsonobject = new JSONObject(json);
+        JSONArray phases = jsonobject.getJSONObject("entities").getJSONArray("phase");
 
+        List<String> phaseIds = new ArrayList<>();
+
+        for(int i=0; i<phases.length();i++){
+            phaseIds.add(phases.getJSONObject(i).get("id").toString());
+        }
+
+        List<String> groupIds = new ArrayList<>();
+
+        for(String phaseId : phaseIds){
+            System.out.println("\n Phase number" + phaseId);
+            json = consumeApi("/phase/" +phaseId + "?expand[]=groups");
+            jsonobject = new JSONObject(json);
+            JSONArray groups = jsonobject.getJSONObject("entities").getJSONArray("groups");
+
+            for (int i=0;i<groups.length();i++){
+                System.out.println("Group id: "+groups.getJSONObject(i).get("id"));
+            }
+        }
+        //             String jsonPhase = consumeApi(/phase/101553?expand[]=groups);
 
 
     }
-
 
     public List<String> returnPhaseGroupIds() throws Exception {
         String apiPath = "/tournament/house-of-smash-38/event/melee-singles?expand[]=groups";
         //Fetch groups from above url endpoint ^
+
+        //TODO: FIx this. Pro bracket is not iterated
+
+
+        // Return all phases: https://api.smash.gg//tournament/house-of-smash-38/event/melee-singles?expand[]=phase
+        // Amateur bracket, pools, pro bracket
+        // ids; 101553, 101554, 101555
+        //https://api.smash.gg/phase/101555
+
 
         String json = consumeApi(apiPath);
         jsonobject = new JSONObject(json);
@@ -82,39 +104,42 @@ public class ReadBracket extends ConsumeApi {
         return phaseGroupIds;
     }
 
-    public void returnPhaseGroups(List<String> phaseGroupIds) throws Exception {
+    public void iterateGroups(List<String> phaseGroupIds) throws Exception {
+
+        playerIdsMappedToEntrantIds = new HashMap<>();
+
+
         for (String id : phaseGroupIds){
-            System.out.println("Each id is "+ id);
-
-            String apiEndpoint = "/phase_group/" +id + "?expand[]=sets&expand=entrants";
-
-            System.out.println("Current API Endpoint: "+ apiEndpoint);
+            String apiEndpoint = "/phase_group/" +id + "?expand[]=entrants&expand[]=sets";
 
             String json = consumeApi(apiEndpoint);
             jsonobject = new JSONObject(json);
 
             JSONArray playerNames = jsonobject.getJSONObject("entities").getJSONArray("player");
+            System.out.println(playerNames.length());
 
+            JSONArray sets = jsonobject.getJSONObject("entities").getJSONArray("sets");
+
+            //iterateSets(sets);
 
             for(int i = 0; i<playerNames.length(); i+=1){
-                System.out.println( "entrant id: " +playerNames.getJSONObject(i).get("entrantId"));
-                System.out.println("player id: " +playerNames.getJSONObject(i).get("id" ));
-                System.out.println("\n");
-                if (i >  4){
-                    break;
+                String entrantId = playerNames.getJSONObject(i).get("entrantId").toString();
+                String playerId =  playerNames.getJSONObject(i).get("id" ).toString();
+                String playerTag =  playerNames.getJSONObject(i).get("gamerTag" ).toString();
+
+                String value = playerIdsMappedToEntrantIds.get(playerId);
+                if (value == null){
+                    playerIdsMappedToEntrantIds.put(playerId,"Entrant id " +entrantId + ", Player tag: " +playerTag);
                 }
             }
-
-
-
-
-
-            break;
         }
 
-        String apiEndpoint = "/phase_group/305690";
+        for (Map.Entry<String, String> entry : playerIdsMappedToEntrantIds.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            System.out.println("Key: "+key + ", value: "+value);
 
-
+        }
 
     }
 
