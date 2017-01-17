@@ -81,9 +81,6 @@ public class ReadBracket extends ConsumeApi {
         String apiPath = "/tournament/house-of-smash-38/event/melee-singles?expand[]=groups";
         //Fetch groups from above url endpoint ^
 
-        //TODO: FIx this. Pro bracket is not iterated
-
-
         // Return all phases: https://api.smash.gg//tournament/house-of-smash-38/event/melee-singles?expand[]=phase
         // Amateur bracket, pools, pro bracket
         // ids; 101553, 101554, 101555
@@ -108,7 +105,6 @@ public class ReadBracket extends ConsumeApi {
 
         playerIdsMappedToEntrantIds = new HashMap<>();
 
-
         for (String id : phaseGroupIds){
             String apiEndpoint = "/phase_group/" +id + "?expand[]=entrants&expand[]=sets";
 
@@ -120,7 +116,7 @@ public class ReadBracket extends ConsumeApi {
 
             JSONArray sets = jsonobject.getJSONObject("entities").getJSONArray("sets");
 
-            //iterateSets(sets);
+            iterateSets(sets);
 
             for(int i = 0; i<playerNames.length(); i+=1){
                 String entrantId = playerNames.getJSONObject(i).get("entrantId").toString();
@@ -141,27 +137,6 @@ public class ReadBracket extends ConsumeApi {
 
         }
 
-    }
-
-    public void steps(){
-
-
-
-        //readBracket from tourney URL:
-        //base url: tournament/house-of-smash-38/events/melee-singles/brackets
-
-        // https://api.smash.gg/tournament/house-of-smash-38/event/melee-singles?expand[]=groups
-
-        // use these IDs to fetch different phase groups for that tournament
-
-
-//        Shortly explained:
-//        Use tournament slug to find:
-//        - event id, which you use to find groups, which in turn you use to find:
-//        phase groups: https://api.smash.gg/tournament/groups/phase_group/phaseGroupId
-//
-//        Then expand the phase group with entrants and sets to iterate wins/losses:
-//        https://api.smash.gg//phase_group/208986?expand[]=sets&expand[]=entrants
     }
 
 
