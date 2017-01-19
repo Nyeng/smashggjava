@@ -23,10 +23,6 @@ public class Player{
     int playerId;
 
 
-//
-//    "entities": {
-//        "player": {
-//            "id": 10627,
 
     public Player(){}
 
