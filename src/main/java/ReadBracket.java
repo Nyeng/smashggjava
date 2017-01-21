@@ -19,13 +19,14 @@ public class ReadBracket extends ConsumeApi {
     public static void main(String[]args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
 
-        List<String> phasegroupids = readbracket.returnPhaseGroupIds();
+        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-32","melee-singles");
         readbracket.iterateGroups(phasegroupids);
-
     }
 
 
     public void iterateSets(JSONArray sets) throws JSONException {
+
+        //So far only showing how to iterate bracket, not storing the data yet. Need to figure out how to process results for a rank api to know how to iterate
 
         for (int i = 0; i < sets.length(); i++) {
             JSONObject setsObjects = sets.getJSONObject(i);
@@ -45,46 +46,8 @@ public class ReadBracket extends ConsumeApi {
         }
     }
 
-    //TODO: not using this one but might get handy later
-//    public void iteratePhases() throws Exception {
-//        String apiPath = "/tournament/house-of-smash-38/event/melee-singles?expand[]=phase"; // returns 3 phases
-//        String json = consumeApi(apiPath);
-//
-//        jsonobject = new JSONObject(json);
-//        JSONArray phases = jsonobject.getJSONObject("entities").getJSONArray("phase");
-//
-//        List<String> phaseIds = new ArrayList<>();
-//
-//        for(int i=0; i<phases.length();i++){
-//            phaseIds.add(phases.getJSONObject(i).get("id").toString());
-//        }
-//
-//        List<String> groupIds = new ArrayList<>();
-//
-//        for(String phaseId : phaseIds){
-//            System.out.println("\n Phase number" + phaseId);
-//            json = consumeApi("/phase/" +phaseId + "?expand[]=groups");
-//            jsonobject = new JSONObject(json);
-//            JSONArray groups = jsonobject.getJSONObject("entities").getJSONArray("groups");
-//
-//            for (int i=0;i<groups.length();i++){
-//                System.out.println("Group id: "+groups.getJSONObject(i).get("id"));
-//            }
-//        }
-//        //             String jsonPhase = consumeApi(/phase/101553?expand[]=groups);
-//
-//
-//    }
-
-    public List<String> returnPhaseGroupIds() throws Exception {
-        String apiPath = "/tournament/house-of-smash-38/event/melee-singles?expand[]=groups";
-        //Fetch groups from above url endpoint ^
-
-        // Return all phases: https://api.smash.gg//tournament/house-of-smash-38/event/melee-singles?expand[]=phase
-        // Amateur bracket, pools, pro bracket
-        // ids; 101553, 101554, 101555
-        //https://api.smash.gg/phase/101555
-
+    public List<String> returnPhaseGroupIds(String tournamentName, String eventName) throws Exception {
+        String apiPath = "/tournament/" + tournamentName + "/event/"+eventName +"?expand[]=groups";
 
         String json = consumeApi(apiPath);
         jsonobject = new JSONObject(json);
@@ -135,7 +98,6 @@ public class ReadBracket extends ConsumeApi {
             System.out.println("Key: "+key + ", value: "+value);
         }
     }
-
 
 
     @Override

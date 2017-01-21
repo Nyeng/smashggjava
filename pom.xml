@@ -20,13 +20,7 @@
     </plugins>
   </build>
   <dependencies>
-
-    <dependency>
-      <groupId>co.paralleluniverse</groupId>
-      <artifactId>capsule</artifactId>
-      <version>0.10.1-SNAPSHOT</version>
-    </dependency>
-
+      
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>

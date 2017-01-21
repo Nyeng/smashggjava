@@ -10,12 +10,6 @@ import org.apache.http.util.EntityUtils;
 public class ConsumeApi {
 
 
-    public static void main(String[]args) throws Exception {
-        ConsumeApi sample = new ConsumeApi();
-
-    }
-
-
     public String consumeApi(String path) throws Exception {
         String responseBody;
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
@@ -38,7 +32,6 @@ public class ConsumeApi {
         }
         return responseBody;
     }
-
 
     public String getBaseApiEndpoint(){
         return "https://api.smash.gg";
