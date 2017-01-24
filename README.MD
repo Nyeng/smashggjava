@@ -20,7 +20,7 @@ Ideas:
 - [ ] Provide an API service (Jersey?)
 
 
-## Ideas ## 
+## Ideas ##
 Once decided upon, they will  be be added in the todo-list. 
 
 * Sort ranks based on Country, region and city
