@@ -41,6 +41,7 @@ Once decided upon, they will  be be added in the todo-list.
 - Jackson parsing: http://wiki.fasterxml.com/JacksonInFiveMinutes#A.22Raw.22_Data_Binding_Example
 - JSON java parser API example http://www.journaldev.com/2324/jackson-json-java-parser-api-example-tutorial
 - Java implementation of True Skill: https://github.com/nsp/JSkills
+- https://github.com/goochjs/glicko2
 - Consider using http://vuejs.org/ ? 
 
 
