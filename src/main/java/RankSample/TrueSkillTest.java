@@ -18,30 +18,27 @@ public class TrueSkillTest {
 
 
     public static void main(String[]args){
-        //trueskillCalc.calculateNewRatings()
-
         TrueSkillTest trueskilltest = new TrueSkillTest();
         trueskilltest.testCalculationImplementationTwoPlayers();
     }
 
-
-    public void testCalculationImplementationTwoPlayers(){
+    //This example shows how to update Players with new skills
+    private void testCalculationImplementationTwoPlayers(){
         Player<String> bosePlayer = new Player<>("Bose");
         Player<String> askePlayer = new Player<>("Askelink");
 
         GameInfo gameInfo = GameInfo.getDefaultGameInfo();
 
+
+        //When a player is new, use this to create First Rank (Default rating which starts at 25.0)
         Team team1 = new Team(bosePlayer, gameInfo.getDefaultRating());
         Team team2 = new Team(askePlayer, gameInfo.getDefaultRating());
-
-
 
         Collection<ITeam> teams = Team.concat(team1, team2);
 
         TwoPlayerTrueSkillCalculator calculator = new TwoPlayerTrueSkillCalculator();
 
         Map<IPlayer, Rating> boseWins = calculator.calculateNewRatings(gameInfo, teams, 1, 2);
-
 
         double newMeanAske = boseWins.get(askePlayer).getMean();
         double newDeviationAske = boseWins.get(askePlayer).getStandardDeviation();
@@ -52,9 +49,8 @@ public class TrueSkillTest {
         teams = Team.concat(team1,team2);
 
         Map<IPlayer, Rating> boseWinsAgain = calculator.calculateNewRatings(gameInfo, teams, 1, 2);
-        System.out.println("Bose wins, new rating: " + boseWins.toString());
-        System.out.println("Bose wins again, new rating: " + boseWinsAgain.toString());
-
+        System.out.println("Bose wins, new Askelink rating: " + boseWins.toString());
+        System.out.println("Bose wins again, new Askelink rating: " + boseWinsAgain.toString());
 
         // σ = confidence of rating
         // μ = actual rating
