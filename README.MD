@@ -1,23 +1,42 @@
-Only a sample project for learning purposes
+# Norwwegian Smash Ranking API #
+
+This is mostly a sample project for learning purposes
 
 Postman link: https://www.getpostman.com/collections/a550ff666688fdfa75b3
 
+## Getting started ##
+* Clone project, run mvn clean install and you're good to go. 
+
 Ideas:
-* Creating a full API Service using smash.gg's API
-* Chess ranking algorithm? 
-* Swagger support?
+* Creating a full API Service using smash.gg's and challonge's API to iterate brackets
+* Chess ranking algorithm? // most important right now
+* Swagger support? //nice, but not prioritized
 
-Functioanlity: 
+## TODOs ##
+- [x] Iterate Smash.gg's bracket API
+- [ ] Iterate Challonge's bracket API
+- [ ] Find a rank api to use as baseline for ranking players
+- [ ] Store player data to database (Mongo db?)
+- [ ] Provide an API service (Jersey?)
+
+
+## Ideas ## 
+Once decided upon, they will  be be added in the todo-list. 
+
 * Sort ranks based on Country, region and city
-* Bruke https://rankade.com/ree#ranking-system-comparison?
-
-MVPS: 
-* Én enkelt turneringsserie i første omgang
-
+* User submissions
+  * Submit direct links to brackets
+  * Tournaments gets automatically added unless they already exist in submitted tournaments list
+  * Post request that only posts if not to be found in db
+  * Users can vote and prioritize submitted tournaments which admins later will generate results for
+  * Admins with simple http authentication allowing them to generate ranks based on users submissions
+  * User submission in the format of:
+  * https://api.smash.gg/tournament/house-of-smash-31/event/melee-singles, the rest is taken care of in the application 
 
 
 
 **Technicalities**
+- Avoid use of frameworks for backend functionality, use libraries instead. 
 - For web: http://nikgrozev.com/2014/10/16/rest-with-embedded-jetty-and-jersey-in-a-single-jar-step-by-step/
 - Jackson parsing: http://wiki.fasterxml.com/JacksonInFiveMinutes#A.22Raw.22_Data_Binding_Example
 - JSON java parser API example http://www.journaldev.com/2324/jackson-json-java-parser-api-example-tutorial
