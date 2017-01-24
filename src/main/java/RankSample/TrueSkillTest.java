@@ -26,22 +26,35 @@ public class TrueSkillTest {
 
 
     public void testCalculationImplementationTwoPlayers(){
-        Player<String> player1 = new Player<String>("Bose");
-        Player<String> player2 = new Player<String>("Askelink");
+        Player<String> bosePlayer = new Player<>("Bose");
+        Player<String> askePlayer = new Player<>("Askelink");
+
         GameInfo gameInfo = GameInfo.getDefaultGameInfo();
 
-        Team team1 = new Team(player1, gameInfo.getDefaultRating());
-        Team team2 = new Team(player2, gameInfo.getDefaultRating());
+        Team team1 = new Team(bosePlayer, gameInfo.getDefaultRating());
+        Team team2 = new Team(askePlayer, gameInfo.getDefaultRating());
+
+
+
         Collection<ITeam> teams = Team.concat(team1, team2);
 
         TwoPlayerTrueSkillCalculator calculator = new TwoPlayerTrueSkillCalculator();
 
-        Map<IPlayer, Rating> askeWinsPlayer = calculator.calculateNewRatings(gameInfo, teams, 2, 1);
         Map<IPlayer, Rating> boseWins = calculator.calculateNewRatings(gameInfo, teams, 1, 2);
 
 
-        System.out.println(askeWinsPlayer.toString());
-        System.out.println(boseWins.toString());
+        double newMeanAske = boseWins.get(askePlayer).getMean();
+        double newDeviationAske = boseWins.get(askePlayer).getStandardDeviation();
+        Rating newAskeRating = new Rating(newMeanAske,newDeviationAske);
+
+        //Recollect new teams
+        team1 = new Team(askePlayer,newAskeRating);
+        teams = Team.concat(team1,team2);
+
+        Map<IPlayer, Rating> boseWinsAgain = calculator.calculateNewRatings(gameInfo, teams, 1, 2);
+        System.out.println("Bose wins, new rating: " + boseWins.toString());
+        System.out.println("Bose wins again, new rating: " + boseWinsAgain.toString());
+
 
         // σ = confidence of rating
         // μ = actual rating
