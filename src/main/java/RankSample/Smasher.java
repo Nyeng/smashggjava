@@ -21,10 +21,9 @@ public class Smasher<S> extends Player {
     public Smasher(S id, Rating rating){
         super(id);
         this.id = id;
-        this.rating = rating;
+        setRating(rating);
         System.out.println("Smasher created with id"+ id);
     }
-
 
     public double getConservativeStandardDeviationMultiplier() {
         return conservativeStandardDeviationMultiplier;

@@ -65,7 +65,12 @@ public class TrueskillSample {
             generator.updatePlayerRanks(vdogg, aske, vdogg);
         }
 
-        Smasher<String> sverre = new Smasher<>("Sverre",(new Rating(50,4.5,4.0)));
+        Smasher<String> sverre = new Smasher<>("Sverre",(Smasher.DEFAULTRATING));
+        sverre.setMeanDeviationAndDeviationMultiplier(50.0,1.0,1.0);
+
+        //Low ranked player gets win vs high rank player
+        generator.updatePlayerRanks(sverre,vdogg,vdogg);
+
         System.out.println(sverre.getRating());
     }
 
