@@ -5,6 +5,7 @@ import java.util.Collection;
 import jskills.GameInfo;
 import jskills.ITeam;
 import jskills.Player;
+import jskills.Rating;
 import jskills.Team;
 
 /**
@@ -15,13 +16,13 @@ public class SmashMatchup {
     private Team team1;
     private Team team2;
 
-    private static GameInfo defaultGameInfo = GameInfo.getDefaultGameInfo();
 
-
-    public SmashMatchup(Player player1, Player player2){
-        team1 = new Team(player1, defaultGameInfo.getDefaultRating());
-        team2 = new Team(player2, defaultGameInfo.getDefaultRating());
+    public SmashMatchup(Player player1, Rating ratingPlayer1, Player player2, Rating ratingPlayer2){
+        team1 = new Team(player1, ratingPlayer1);
+        team2 = new Team(player2, ratingPlayer2);
     }
+
+    public static GameInfo defaultGameInfo = GameInfo.getDefaultGameInfo();
 
     public static GameInfo returnGameinfo(){
         return defaultGameInfo;

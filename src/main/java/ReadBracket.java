@@ -1,3 +1,4 @@
+import static RankSample.SmashMatchup.defaultGameInfo;
 import static RankSample.SmashMatchup.returnGameinfo;
 
 import java.util.ArrayList;
@@ -32,16 +33,15 @@ public class ReadBracket extends ConsumeApi {
 
         List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-32","melee-singles");
         readbracket.iterateGroups(phasegroupids);
+
+        String Vdogg = readbracket.playerIdsMappedToEntrantIds.get("10627");
+        System.out.println(Vdogg);
     }
 
 
     public void iterateSets(JSONArray sets) throws JSONException {
 
-        HashMap<String, List<String>> playerResults = new HashMap<>();
-        List<String> listResults = new ArrayList<>();
-
         // First find old rank based on some rank stored in database. Then generate a map with every result for a player for a tournament.
-
 
         //So far only showing how to iterate bracket, not storing the data yet. Need to figure out how to process results for a rank api to know how to iterate
 
@@ -55,7 +55,7 @@ public class ReadBracket extends ConsumeApi {
             Player smasher1 = new Player<>(entrant1id);
             Player smasher2 = new Player<>(entrant2Id);
 
-            SmashMatchup smashmatchup = new SmashMatchup(smasher1,smasher2);
+            SmashMatchup smashmatchup = new SmashMatchup(smasher1,defaultGameInfo.getDefaultRating(),smasher2,defaultGameInfo.getDefaultRating());
             Collection<ITeam> players  = smashmatchup.returnMatchup();
             TwoPlayerTrueSkillCalculator calculator = new TwoPlayerTrueSkillCalculator();
 
@@ -74,8 +74,6 @@ public class ReadBracket extends ConsumeApi {
                 resultPlayer1 = 2;
                 resultPlayer2 = 1;
             }
-
-
 
             // first result parameter is RANK for smasher1, second is RANK for smasher2
             Map<IPlayer, Rating> setResult = calculator.calculateNewRatings(defaultGameInfo, players, resultPlayer1, resultPlayer2);
@@ -97,8 +95,6 @@ public class ReadBracket extends ConsumeApi {
             System.out.println("\n");
 
             break;
-
-
         }
     }
 
@@ -124,9 +120,9 @@ public class ReadBracket extends ConsumeApi {
         playerIdsMappedToEntrantIds = new HashMap<>();
 
         for (String id : phaseGroupIds){
-            String apiEndpoint = "/phase_group/" +id + "?expand[]=entrants&expand[]=sets";
+            String phaseGroupApiEndpoint = "/phase_group/" +id + "?expand[]=entrants&expand[]=sets";
 
-            String json = consumeApi(apiEndpoint);
+            String json = consumeApi(phaseGroupApiEndpoint);
             jsonobject = new JSONObject(json);
 
             JSONArray playerNames = jsonobject.getJSONObject("entities").getJSONArray("player");
