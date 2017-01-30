@@ -1,11 +1,7 @@
 import static RankSample.SmashMatchup.defaultGameInfo;
 import static RankSample.SmashMatchup.returnGameinfo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +22,7 @@ public class ReadBracket extends ConsumeApi {
 
     private JSONObject jsonobject;
     private HashMap<String, String> playerIdsMappedToEntrantIds;
+    private List<JSONObject> playerSets;
 
 
     public static void main(String[]args) throws Exception {
@@ -34,15 +31,26 @@ public class ReadBracket extends ConsumeApi {
         List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-32","melee-singles");
         readbracket.iterateGroups(phasegroupids);
 
-        String Vdogg = readbracket.playerIdsMappedToEntrantIds.get("10627");
-        System.out.println(Vdogg);
+//        String Vdogg = readbracket.playerIdsMappedToEntrantIds.get("10627");
+//        System.out.println(Vdogg);
+
+        Iterator<?> keys = readbracket.jsonobject.keys();
+
+        while (keys.hasNext()){
+            String key = (String)keys.next();
+            if ( readbracket.jsonobject.get(key) instanceof JSONObject ) {
+                System.out.println(readbracket.jsonobject.get(key));
+            }
+
+
+        }
+
+
     }
 
 
     public void iterateSets(JSONArray sets) throws JSONException {
-
         // First find old rank based on some rank stored in database. Then generate a map with every result for a player for a tournament.
-
         //So far only showing how to iterate bracket, not storing the data yet. Need to figure out how to process results for a rank api to know how to iterate
 
         for (int i = 0; i < sets.length(); i++) {
@@ -51,16 +59,6 @@ public class ReadBracket extends ConsumeApi {
             String entrant2Id = (setsObjects.getString("entrant2Id") == null) ? "N/A" : setsObjects.getString("entrant2Id");
             String entrant1id = (setsObjects.getString("entrant1Id") == null) ? "N/A" : setsObjects.getString("entrant1Id");
             String winnerId = (setsObjects.getString("winnerId") == null) ? "N/A" : setsObjects.getString("winnerId");
-
-            Player smasher1 = new Player<>(entrant1id);
-            Player smasher2 = new Player<>(entrant2Id);
-
-            SmashMatchup smashmatchup = new SmashMatchup(smasher1,defaultGameInfo.getDefaultRating(),smasher2,defaultGameInfo.getDefaultRating());
-            Collection<ITeam> players  = smashmatchup.returnMatchup();
-            TwoPlayerTrueSkillCalculator calculator = new TwoPlayerTrueSkillCalculator();
-
-            GameInfo defaultGameInfo = returnGameinfo();
-
 
             int resultPlayer1,resultPlayer2;
 
@@ -75,24 +73,12 @@ public class ReadBracket extends ConsumeApi {
                 resultPlayer2 = 1;
             }
 
-            // first result parameter is RANK for smasher1, second is RANK for smasher2
-            Map<IPlayer, Rating> setResult = calculator.calculateNewRatings(defaultGameInfo, players, resultPlayer1, resultPlayer2);
-
-            double newMeanSmasher1 = setResult.get(smasher1).getMean();
-            double newMeanSmasher2 = setResult.get(smasher2).getStandardDeviation();
-
-            Rating newPlayerRating = new Rating(newMeanSmasher1,newMeanSmasher2);
-
-            System.out.println("new Rating for players: " + newPlayerRating);
-
             String setPlayed = (setsObjects.getString("fullRoundText") == null) ? "N/A" : setsObjects.getString("fullRoundText");
 
-            System.out.println("Set " + setPlayed);
-            System.out.println("Entrant 1: " + entrant1id);
-            System.out.println("Entrant 2 " + entrant2Id);
-            System.out.println("Winner ID: " + winnerId);
-
-            System.out.println("\n");
+//            System.out.println("Set " + setPlayed);
+//            System.out.println("Entrant 1: " + entrant1id);
+//            System.out.println("Entrant 2 " + entrant2Id);
+//            System.out.println("Winner ID: " + winnerId);
 
             break;
         }
@@ -126,7 +112,6 @@ public class ReadBracket extends ConsumeApi {
             jsonobject = new JSONObject(json);
 
             JSONArray playerNames = jsonobject.getJSONObject("entities").getJSONArray("player");
-            System.out.println(playerNames.length());
 
             JSONArray sets = jsonobject.getJSONObject("entities").getJSONArray("sets");
 

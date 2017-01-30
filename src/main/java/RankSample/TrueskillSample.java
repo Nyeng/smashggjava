@@ -19,7 +19,7 @@ public class TrueskillSample {
     TwoPlayerTrueSkillCalculator calculator = new TwoPlayerTrueSkillCalculator();
 
 
-    public void updatePlayerRanks(Smasher<String> smasherOne, Smasher<String> smasherTwo, Smasher<String> winner){
+    public void updatePlayerRanks(Smasher<String> smasherOne, Smasher<String> smasherTwo, int winnerScore, int loserScore){
 
         SmashMatchup playerComparison = new SmashMatchup(
             smasherOne,smasherOne.getRating()
@@ -29,7 +29,7 @@ public class TrueskillSample {
         Collection<ITeam> match = playerComparison.returnMatchup();
 
         //figure out a way to update this game info shiit.
-        Map<IPlayer, Rating> Rating = calculator.calculateNewRatings(defaultGameInfo, match, 2, 1);
+        Map<IPlayer, Rating> Rating = calculator.calculateNewRatings(defaultGameInfo, match, winnerScore, loserScore);
 
         smasherOne.setMeanDeviationAndDeviationMultiplier(Rating.get(smasherOne).getMean(),
             Rating.get(smasherOne).getStandardDeviation(),
@@ -62,14 +62,14 @@ public class TrueskillSample {
 
         for (int i = 0; i<5; i++){
             //looping through 10 wins for one player
-            generator.updatePlayerRanks(vdogg, aske, vdogg);
+            generator.updatePlayerRanks(vdogg, aske, 1,2);
         }
 
         Smasher<String> sverre = new Smasher<>("Sverre",(Smasher.DEFAULTRATING));
         sverre.setMeanDeviationAndDeviationMultiplier(50.0,1.0,1.0);
 
         //Low ranked player gets win vs high rank player
-        generator.updatePlayerRanks(sverre,vdogg,vdogg);
+        generator.updatePlayerRanks(sverre,vdogg,1,2);
 
         System.out.println(sverre.getRating());
     }
