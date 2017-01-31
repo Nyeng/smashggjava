@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import RankSample.Smasher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import RankSample.Smasher;
 
 /**
  * Created by k79689 on 17.01.17.
@@ -17,50 +17,41 @@ public class ReadBracket extends ConsumeApi {
     private HashMap<String, String> playerIdsMappedToEntrantIds;
     private List<JSONObject> winnerAndLoserIdsForEverSetPlayedAtAtournament;
     private int countedSets;
+    List<Smasher> smashers;
+
 
     public static void main(String[]args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
 
-        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-32", "melee-singles");
+        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-33", "melee-singles");
         readbracket.iterateGroups(phasegroupids);
 
 //        String Vdogg = readbracket.playerIdsMappedToEntrantIds.get("10627");
 //        System.out.println(Vdogg);
 
-        JSONObject testObject = new JSONObject();
-
-        int counter = 0;
-
-        for (String player : readbracket.playerIdsMappedToEntrantIds.keySet()) {
-            // create object for each smasher
-            Smasher smasher = new Smasher<>(player, readbracket.playerIdsMappedToEntrantIds.get(player));
-
-
-            for (JSONObject object : readbracket.winnerAndLoserIdsForEverSetPlayedAtAtournament) {
-                //for EVERY set you HAVE to: update rank for each player, so that all the following matches will be correct
-                //Iterate ieach set first, now only iterating one set
-                counter++;
-                if (object.getString("winnerId").equals(smasher.getEntrantId())){
-                    System.out.println("Found matches for player "+ smasher.getId());
-                    System.out.println("played this match: " + object.getString("fullRoundText"));
-                }
-
-
-
-            }
-            // iterate over all sets
-
+        for (Map.Entry<String, String> players : readbracket.playerIdsMappedToEntrantIds.entrySet()) {
+            Smasher<String> smasher = new Smasher(players.getKey(),players.getValue());
+            readbracket.smashers.add(smasher);
         }
 
-        System.out.println("Counter" + counter);
+        for (JSONObject object : readbracket.winnerAndLoserIdsForEverSetPlayedAtAtournament) {
+
+            // System.out.println("winner id " +winnerId);
+            for (Smasher smasher : readbracket.smashers) {
+                String winnerId = object.getString("winnerId");
+                if (smasher.getEntrantId().contains(winnerId)) {
+
+                    //Update RANK FOR SMASHER YES
+                    System.out.println("Smasher id for winner id: " + smasher.getId());
+                }
+            }
+        }
+
     }
 
 
-    public void iterateSets(JSONArray sets) throws JSONException {
-        System.out.println("Set lengths: " + sets.length());
-        System.out.println("Count sets");
-        countedSets += sets.length();
 
+    public void iterateSets(JSONArray sets) throws JSONException {
         // First find old rank based on some rank stored in database. Then generate a map with every result for a player for a tournament.
         //So far only showing how to iterate bracket, not storing the data yet. Need to figure out how to process results for a rank api to know how to iterate
         winnerAndLoserIdsForEverSetPlayedAtAtournament = new ArrayList<>();
@@ -85,8 +76,8 @@ public class ReadBracket extends ConsumeApi {
                 loserId = entrant1id;
             }
 
-            if (! (winnerId.equals("null") || loserId.equals("null"))) {
-                System.out.println("winner is "+winnerId +", loser is "+loserId);
+            if (!(winnerId.equals("null") || loserId.equals("null"))) {
+              //  System.out.println("winner is "+winnerId +", loser is "+loserId);
                 winnerAndLoserIdsForEverSetPlayedAtAtournament.add(setsObjects);
                 countedSets+=1;
             }
@@ -94,8 +85,6 @@ public class ReadBracket extends ConsumeApi {
             }
         }
     }
-
-
 
 
     public List<String> returnPhaseGroupIds(String tournamentName, String eventName) throws Exception {
@@ -117,8 +106,6 @@ public class ReadBracket extends ConsumeApi {
 
     public void iterateGroups(List<String> phaseGroupIds) throws Exception {
 
-        playerIdsMappedToEntrantIds = new HashMap<>();
-
         for (String id : phaseGroupIds){
             String phaseGroupApiEndpoint = "/phase_group/" +id + "?expand[]=entrants&expand[]=sets";
 
@@ -130,6 +117,9 @@ public class ReadBracket extends ConsumeApi {
 
             iterateSets(sets);
 
+            System.out.println("Playernames length " + playerNames.length());
+            smashers = new ArrayList<>(playerNames.length());
+            playerIdsMappedToEntrantIds = new HashMap<>(playerNames.length());
 
             for(int i = 0; i<playerNames.length(); i+=1){
                 String entrantId = playerNames.getJSONObject(i).get("entrantId").toString();
@@ -137,6 +127,7 @@ public class ReadBracket extends ConsumeApi {
                 //String playerTag =  playerNames.getJSONObject(i).get("gamerTag" ).toString();
                 String value = playerIdsMappedToEntrantIds.get(playerId);
                 if (value == null){
+                    //adds same player twice, but keeps them unique cus HashMap
                     playerIdsMappedToEntrantIds.put(playerId,entrantId);
                 }
             }
