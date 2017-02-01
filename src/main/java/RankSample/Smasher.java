@@ -16,7 +16,6 @@ public class Smasher<S> extends Player {
     private double deviation = 0.0;
     private static GameInfo defaultGameInfo = GameInfo.getDefaultGameInfo();
     static final Rating DEFAULTRATING = defaultGameInfo.getDefaultRating();
-    private Rating rating;
     private String entrantId;
 
     public Smasher(S id, Rating rating){
@@ -39,9 +38,6 @@ public class Smasher<S> extends Player {
         System.out.println("Created smasher with id "+id + " and entrant id: " + entrantId);
     }
 
-//    public S getId(){
-//        return id;
-//    }
 
     public double getConservativeStandardDeviationMultiplier() {
         return conservativeStandardDeviationMultiplier;
@@ -57,7 +53,7 @@ public class Smasher<S> extends Player {
     }
 
     public void setRating(Rating rating){
-        this.rating = rating;
+        Rating rating1 = rating;
     }
 
     public Rating setDefaultRating(){

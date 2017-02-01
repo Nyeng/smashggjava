@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import RankSample.Smasher;
+import RankSample.TrueskillSample;
 
 /**
  * Created by k79689 on 17.01.17.
@@ -18,30 +19,34 @@ public class ReadBracket extends ConsumeApi {
     private HashMap<String, String> playerIdsMappedToEntrantIds;
     private List<JSONObject> winnerAndLoserIdsForEverSetPlayedAtAtournament;
     private int countedSets;
-    List<Smasher> smashers;
+    private List<Smasher<String>> smashers;
 
 
     public static void main(String[]args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
+        TrueskillSample trueskill = new TrueskillSample();
 
         List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-33", "melee-singles");
         readbracket.iterateGroups(phasegroupids);
 
         for (Map.Entry<String, String> players : readbracket.playerIdsMappedToEntrantIds.entrySet()) {
             Smasher<String> smasher = new Smasher<>(players.getKey(),players.getValue());
+            smasher.setDefaultRating();
             readbracket.smashers.add(smasher);
         }
 
-        for (JSONObject object : readbracket.winnerAndLoserIdsForEverSetPlayedAtAtournament) {
+        for (JSONObject bracketRound : readbracket.winnerAndLoserIdsForEverSetPlayedAtAtournament) {
 
+            Smasher<String> loser = null;
+            Smasher<String> winner = null;
             // System.out.println("winner id " +winnerId);
-            for (Smasher smasher : readbracket.smashers) {
-                String winnerId = object.getString("winnerId");
-                String entrant2Id = (object.getString("entrant2Id") == null) ? "N/A" : object.getString("entrant2Id");
-                String entrant1id = (object.getString("entrant1Id") == null) ? "N/A" : object.getString("entrant1Id");
+            for (Smasher<String> smasher : readbracket.smashers) {
+                String winnerId = bracketRound.getString("winnerId");
+                String entrant2Id = (bracketRound.getString("entrant2Id") == null) ? "N/A" : bracketRound.getString("entrant2Id");
+                String entrant1id = (bracketRound.getString("entrant1Id") == null) ? "N/A" : bracketRound.getString("entrant1Id");
                 String loserId;
                 String setPlayed =
-                    (object.getString("fullRoundText") == null) ? "N/A" : object.getString("fullRoundText");
+                    (bracketRound.getString("fullRoundText") == null) ? "N/A" : bracketRound.getString("fullRoundText");
 
 //                System.out.println("Set " + setPlayed);
 //                System.out.println("Entrant 1: " + entrant1id);
@@ -54,13 +59,23 @@ public class ReadBracket extends ConsumeApi {
                 }
 
                 if (smasher.getEntrantId().contains(winnerId)) {
-                    //Update RANK FOR SMASHER YES
-                    System.out.println("Smasher id for winner: " + smasher.getId() + " and round: " + setPlayed);
+                    winner = smasher;
+                    System.out.println("Bracket round " + bracketRound);
+//                    //Update RANK FOR SMASHER YES
+//                    System.out.println("Winner id: " + winnerId);
+//                    System.out.println("Smasher id for winner: " + smasher.getId() + " and round: " + setPlayed);
+                    //System.out.println("entrant id for winner:  " + smasher.getEntrantId());
                 }
                 else if (smasher.getEntrantId().contains(loserId))
                 {
-                    System.out.println("Loser id: " + smasher.getId() + "\n");
+                    loser = smasher;
+//                    System.out.println("Loser id: " + smasher.getId() + "\n");
                 }
+            }
+            if(winner!= null && loser !=null){
+                System.out.println("Loser id of player: " + loser.getId());
+                System.out.println("winner id of player: " + winner.getId());
+                trueskill.updatePlayerRanks(winner,loser);
             }
         }
     }
@@ -133,7 +148,7 @@ public class ReadBracket extends ConsumeApi {
             iterateSets(sets);
 
             System.out.println("Playernames length " + playerNames.length());
-            smashers = new ArrayList<>(playerNames.length());
+            smashers = new ArrayList<Smasher<String>>(playerNames.length());
             playerIdsMappedToEntrantIds = new HashMap<>(playerNames.length());
 
             for(int i = 0; i<playerNames.length(); i+=1){
