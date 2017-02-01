@@ -20,6 +20,7 @@ public class ReadBracket extends ConsumeApi {
     private List<JSONObject> winnerAndLoserIdsForEverSetPlayedAtAtournament;
     private int countedSets;
     private List<Smasher<String>> smashers;
+    private Smasher smasher;
 
 
     public static void main(String[]args) throws Exception {
@@ -48,10 +49,6 @@ public class ReadBracket extends ConsumeApi {
                 String setPlayed =
                     (bracketRound.getString("fullRoundText") == null) ? "N/A" : bracketRound.getString("fullRoundText");
 
-//                System.out.println("Set " + setPlayed);
-//                System.out.println("Entrant 1: " + entrant1id);
-//                System.out.println("Entrant 2 " + entrant2Id);
-//                System.out.println("Winner ID: " + winnerId);
                 if (winnerId.equals(entrant1id)) {
                     loserId = entrant2Id;
                 } else {
@@ -60,16 +57,11 @@ public class ReadBracket extends ConsumeApi {
 
                 if (smasher.getEntrantId().contains(winnerId)) {
                     winner = smasher;
-                    System.out.println("Bracket round " + bracketRound);
-//                    //Update RANK FOR SMASHER YES
-//                    System.out.println("Winner id: " + winnerId);
-//                    System.out.println("Smasher id for winner: " + smasher.getId() + " and round: " + setPlayed);
-                    //System.out.println("entrant id for winner:  " + smasher.getEntrantId());
+                    System.out.println("Bracket round " + setPlayed);
                 }
                 else if (smasher.getEntrantId().contains(loserId))
                 {
                     loser = smasher;
-//                    System.out.println("Loser id: " + smasher.getId() + "\n");
                 }
             }
             if(winner!= null && loser !=null){
@@ -78,6 +70,16 @@ public class ReadBracket extends ConsumeApi {
                 trueskill.updatePlayerRanks(winner,loser);
             }
         }
+
+
+        // Smashers sorted:
+        readbracket.smashers
+            .stream()
+            .sorted((e2, e1) -> Double.compare(e1.getMean(),
+                e2.getMean()))
+            .forEach(System.out::println);
+
+
     }
 
 
@@ -93,12 +95,7 @@ public class ReadBracket extends ConsumeApi {
             String entrant1id = (setsObjects.getString("entrant1Id") == null) ? "N/A" : setsObjects.getString("entrant1Id");
             String winnerId = (setsObjects.getString("winnerId") == null) ? "N/A" : setsObjects.getString("winnerId");
             String loserId;
-            String setPlayed = (setsObjects.getString("fullRoundText") == null) ? "N/A" : setsObjects.getString("fullRoundText");
 
-//            System.out.println("Set " + setPlayed);
-//            System.out.println("Entrant 1: " + entrant1id);
-//            System.out.println("Entrant 2 " + entrant2Id);
-//            System.out.println("Winner ID: " + winnerId);
             if (winnerId.equals(entrant1id)){
                 loserId = entrant2Id;
             }
