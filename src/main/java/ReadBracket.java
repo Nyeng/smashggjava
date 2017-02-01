@@ -22,7 +22,6 @@ public class ReadBracket extends ConsumeApi {
     private List<Smasher<String>> smashers;
     private Smasher smasher;
 
-
     public static void main(String[]args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
         TrueskillSample trueskill = new TrueskillSample();
@@ -71,14 +70,12 @@ public class ReadBracket extends ConsumeApi {
             }
         }
 
-
         // Smashers sorted:
         readbracket.smashers
             .stream()
             .sorted((e2, e1) -> Double.compare(e1.getMean(),
                 e2.getMean()))
             .forEach(System.out::println);
-
 
     }
 
@@ -135,6 +132,8 @@ public class ReadBracket extends ConsumeApi {
 
         for (String id : phaseGroupIds){
             String phaseGroupApiEndpoint = "/phase_group/" +id + "?expand[]=entrants&expand[]=sets";
+            System.out.println(phaseGroupApiEndpoint);
+
 
             String json = consumeApi(phaseGroupApiEndpoint);
             jsonobject = new JSONObject(json);
@@ -144,8 +143,7 @@ public class ReadBracket extends ConsumeApi {
 
             iterateSets(sets);
 
-            System.out.println("Playernames length " + playerNames.length());
-            smashers = new ArrayList<Smasher<String>>(playerNames.length());
+            smashers = new ArrayList<>(playerNames.length());
             playerIdsMappedToEntrantIds = new HashMap<>(playerNames.length());
 
             for(int i = 0; i<playerNames.length(); i+=1){

@@ -15,7 +15,8 @@ Ideas:
 ## TODOs ##
 - [x] Iterate Smash.gg's bracket API
 - [x] Find a rank api to use as baseline for ranking players (JSkills)
-- [ ] Implement comparator for List of Smashers: http://stackoverflow.com/questions/5805602/how-to-sort-list-of-objects-by-some-property
+- [X] ~~Implement comparator for List of Smashers: http://stackoverflow.com/questions/5805602/how-to-sort-list-of-objects-by-some-property~~
+  - [X] Use Java 8 Streams instead
 - [ ] Iterate Challonge's bracket API
 - [ ] Store player data to database (Mongo db?)
 - [ ] Provide an API service (Jersey?)
