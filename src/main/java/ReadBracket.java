@@ -3,10 +3,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import RankSample.Smasher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import RankSample.Smasher;
 
 /**
  * Created by k79689 on 17.01.17.
@@ -26,11 +27,8 @@ public class ReadBracket extends ConsumeApi {
         List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-33", "melee-singles");
         readbracket.iterateGroups(phasegroupids);
 
-//        String Vdogg = readbracket.playerIdsMappedToEntrantIds.get("10627");
-//        System.out.println(Vdogg);
-
         for (Map.Entry<String, String> players : readbracket.playerIdsMappedToEntrantIds.entrySet()) {
-            Smasher<String> smasher = new Smasher(players.getKey(),players.getValue());
+            Smasher<String> smasher = new Smasher<>(players.getKey(),players.getValue());
             readbracket.smashers.add(smasher);
         }
 
@@ -39,16 +37,33 @@ public class ReadBracket extends ConsumeApi {
             // System.out.println("winner id " +winnerId);
             for (Smasher smasher : readbracket.smashers) {
                 String winnerId = object.getString("winnerId");
-                if (smasher.getEntrantId().contains(winnerId)) {
+                String entrant2Id = (object.getString("entrant2Id") == null) ? "N/A" : object.getString("entrant2Id");
+                String entrant1id = (object.getString("entrant1Id") == null) ? "N/A" : object.getString("entrant1Id");
+                String loserId;
+                String setPlayed =
+                    (object.getString("fullRoundText") == null) ? "N/A" : object.getString("fullRoundText");
 
+//                System.out.println("Set " + setPlayed);
+//                System.out.println("Entrant 1: " + entrant1id);
+//                System.out.println("Entrant 2 " + entrant2Id);
+//                System.out.println("Winner ID: " + winnerId);
+                if (winnerId.equals(entrant1id)) {
+                    loserId = entrant2Id;
+                } else {
+                    loserId = entrant1id;
+                }
+
+                if (smasher.getEntrantId().contains(winnerId)) {
                     //Update RANK FOR SMASHER YES
-                    System.out.println("Smasher id for winner id: " + smasher.getId());
+                    System.out.println("Smasher id for winner: " + smasher.getId() + " and round: " + setPlayed);
+                }
+                else if (smasher.getEntrantId().contains(loserId))
+                {
+                    System.out.println("Loser id: " + smasher.getId() + "\n");
                 }
             }
         }
-
     }
-
 
 
     public void iterateSets(JSONArray sets) throws JSONException {

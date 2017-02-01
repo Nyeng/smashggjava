@@ -60,6 +60,10 @@ public class Smasher<S> extends Player {
         this.rating = rating;
     }
 
+    public Rating setDefaultRating(){
+        return DEFAULTRATING;
+    }
+
     public Rating getRating(){
         // new SmashMatchup(smasherVdogg,defaultGameInfo.getDefaultRating(),smasherAske,defaultGameInfo.getDefaultRating());
         if( (getMean() == 0.0 || getDeviation() == 0)  ){
