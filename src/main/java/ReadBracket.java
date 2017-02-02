@@ -61,7 +61,6 @@ public class ReadBracket {
 
             Smasher<String> loser = null;
             Smasher<String> winner = null;
-            // System.out.println("winner id " +winnerId);
             for (Smasher<String> smasher : smashers) {
                 String winnerId = null;
                 try {
@@ -102,7 +101,6 @@ public class ReadBracket {
 
                 if (smasher.getEntrantId().contains(winnerId)) {
                     winner = smasher;
-                    System.out.println("Bracket round " + setPlayed);
                 }
                 else if (smasher.getEntrantId().contains(loserId))
                 {
