@@ -15,7 +15,7 @@ public class Smasher<S> extends Player {
     private double conservativeStandardDeviationMultiplier = 0.0;
     private double deviation = 0.0;
     private static GameInfo defaultGameInfo = GameInfo.getDefaultGameInfo();
-    static final Rating DEFAULTRATING = defaultGameInfo.getDefaultRating();
+    public static final Rating DEFAULTRATING = defaultGameInfo.getDefaultRating();
     private String entrantId;
 
     public Smasher(S id, Rating rating){

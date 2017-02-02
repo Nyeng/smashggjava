@@ -13,7 +13,7 @@ import jskills.trueskill.TwoPlayerTrueSkillCalculator;
 /**
  * Created by k79689 on 25.01.17.
  */
-public class TrueSkill {
+public class TrueSkillImplementation {
 
     private TwoPlayerTrueSkillCalculator calculator = new TwoPlayerTrueSkillCalculator();
 
@@ -49,7 +49,7 @@ public class TrueSkill {
     public static void main(String[] args) {
 
         System.out.println("μ means average skill of player and σσ is a confidence of the guessed rating");
-        TrueSkill generator = new TrueSkill();
+        TrueSkillImplementation generator = new TrueSkillImplementation();
 
         Smasher<String> vdogg = new Smasher<>("Vdogg", Smasher.DEFAULTRATING);
         Smasher<String> aske = new Smasher<>("Aske", Smasher.DEFAULTRATING);
