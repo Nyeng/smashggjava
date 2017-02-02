@@ -49,8 +49,8 @@ public class Smasher<S> extends Player {
         return deviation;
     }
 
-    public void setRating(Rating rating){
-        Rating rating1 = rating;
+    public Rating setRating(Rating rating){
+        return rating;
     }
 
     public Rating setDefaultRating(){
