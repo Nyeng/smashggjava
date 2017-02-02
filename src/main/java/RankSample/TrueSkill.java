@@ -7,16 +7,15 @@ import java.util.Map;
 
 import jskills.IPlayer;
 import jskills.ITeam;
-import jskills.Player;
 import jskills.Rating;
 import jskills.trueskill.TwoPlayerTrueSkillCalculator;
 
 /**
  * Created by k79689 on 25.01.17.
  */
-public class TrueskillSample {
+public class TrueSkill {
 
-    TwoPlayerTrueSkillCalculator calculator = new TwoPlayerTrueSkillCalculator();
+    private TwoPlayerTrueSkillCalculator calculator = new TwoPlayerTrueSkillCalculator();
 
     public void updatePlayerRanks(Smasher<String> winner, Smasher<String> loser) {
 
@@ -50,7 +49,7 @@ public class TrueskillSample {
     public static void main(String[] args) {
 
         System.out.println("μ means average skill of player and σσ is a confidence of the guessed rating");
-        TrueskillSample generator = new TrueskillSample();
+        TrueSkill generator = new TrueSkill();
 
         Smasher<String> vdogg = new Smasher<>("Vdogg", Smasher.DEFAULTRATING);
         Smasher<String> aske = new Smasher<>("Aske", Smasher.DEFAULTRATING);
@@ -69,16 +68,6 @@ public class TrueskillSample {
         generator.updatePlayerRanks(sverre, vdogg);
 
         System.out.println(sverre.getRating());
-    }
-
-    public Collection<ITeam> generateMatchupWithNewRanks(Player playerOne, double meanPlayerOne,
-        double deviationPlayerOne, Player playerTwo, double meanPlayerTwo, double deviationPlayerTwo) {
-
-        Rating ratingPlayer1 = new Rating(meanPlayerOne, deviationPlayerOne);
-        Rating ratingPlayer2 = new Rating(meanPlayerTwo, deviationPlayerTwo);
-
-        SmashMatchup matchup = new SmashMatchup(playerOne, ratingPlayer1, playerTwo, ratingPlayer2);
-        return matchup.returnMatchup();
     }
 
 }

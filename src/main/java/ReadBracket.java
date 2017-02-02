@@ -8,12 +8,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import RankSample.Smasher;
-import RankSample.TrueskillSample;
+import RankSample.TrueSkill;
 
 /**
  * Created by k79689 on 17.01.17.
  */
-public class ReadBracket extends ConsumeApi {
+public class ReadBracket {
 
     private JSONObject jsonobject;
     private HashMap<String, String> playerIdsMappedToEntrantIds;
@@ -21,10 +21,12 @@ public class ReadBracket extends ConsumeApi {
     private int countedSets;
     private List<Smasher<String>> smashers;
     private Smasher smasher;
+    private ConsumeApi consumeApi = new ConsumeApi();
+
 
     public static void main(String[]args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
-        TrueskillSample trueskill = new TrueskillSample();
+        TrueSkill trueskill = new TrueSkill();
 
         List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-33", "melee-singles");
         readbracket.iterateGroups(phasegroupids);
@@ -115,7 +117,7 @@ public class ReadBracket extends ConsumeApi {
 
         String apiPath = "/tournament/" + tournamentName + "/event/"+eventName +"?expand[]=groups";
 
-        String json = consumeApi(apiPath);
+        String json = getJsonForRequest(apiPath);
         jsonobject = new JSONObject(json);
         JSONArray groupIds = jsonobject.getJSONObject("entities").getJSONArray("groups");
 
@@ -135,7 +137,7 @@ public class ReadBracket extends ConsumeApi {
             System.out.println(phaseGroupApiEndpoint);
 
 
-            String json = consumeApi(phaseGroupApiEndpoint);
+            String json = getJsonForRequest(phaseGroupApiEndpoint);
             jsonobject = new JSONObject(json);
 
             JSONArray playerNames = jsonobject.getJSONObject("entities").getJSONArray("player");
@@ -168,9 +170,8 @@ public class ReadBracket extends ConsumeApi {
     }
 
 
-    @Override
-    public String consumeApi(String path) throws Exception {
-        return super.consumeApi(path);
+    private String getJsonForRequest(String path) throws Exception {
+        return consumeApi.parseGetRequestToJson(path);
     }
 
 

@@ -10,7 +10,7 @@ import org.apache.http.util.EntityUtils;
 public class ConsumeApi {
 
 
-    public String consumeApi(String path) throws Exception {
+    public String parseGetRequestToJson(String path) throws Exception {
         String responseBody;
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             org.apache.http.client.methods.HttpGet
