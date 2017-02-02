@@ -37,13 +37,6 @@ public class TrueSkillImplementation {
         loser.setMeanDeviationAndDeviationMultiplier(Rating.get(loser).getMean(),
             Rating.get(loser).getStandardDeviation(),
             Rating.get(loser).getConservativeStandardDeviationMultiplier());
-
-        System.out.println("new ranks: " + winner.toString());
-        System.out.println("new ranks: " + loser.toString());
-
-        System.out.println("\n Ratings player one" + winner.getRating());
-        System.out.println("Ratings player two" + loser.getRating());
-
     }
 
     public static void main(String[] args) {

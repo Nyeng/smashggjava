@@ -7,6 +7,9 @@ import java.util.List;
  */
 public class SmashersList {
 
+
+    //Class not implemented yet
+
     private List<Smasher<String>> smashers;
 
     public SmashersList(List<Smasher<String>> smashers) {

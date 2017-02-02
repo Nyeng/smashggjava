@@ -51,7 +51,7 @@ public class ReadBracket {
         for (Map.Entry<String, String> players : playerIdsMappedToEntrantIds.entrySet()) {
             Smasher<String> smasher = new Smasher<>(players.getKey(),players.getValue());
             smasher.setDefaultRating();
-            createListOfSmashers(smasher);
+            //createListOfSmashers(smasher);
             smashers.add(smasher);
         }
     }
@@ -110,8 +110,6 @@ public class ReadBracket {
                 }
             }
             if(winner!= null && loser !=null){
-                System.out.println("Loser id of player: " + loser.getId());
-                System.out.println("winner id of player: " + winner.getId());
                 trueskill.updatePlayerRanks(winner,loser);
             }
         }
