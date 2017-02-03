@@ -25,13 +25,10 @@ public class ReadBracket {
     public static void main(String[] args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
         //figure out contestants for tournament
-
         //Returns each phase group id for each bracket played for event
-        List<String> phasegroupids = readbracket.returnPhaseGroupIds("super-south-bay-sunday-22", "melee-singles");
-        readbracket.iterateGroups(phasegroupids);
-
-        //Creating instances of new smashers, with default rating and player id + entrant id so far
-        //  readbracket.createInstanceOfSmashersBeforeGeneratingNewRanks();
+        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-38", "melee-singles");
+        readbracket.getAllPlayedSetsForTournament(phasegroupids);
+        readbracket.createSmasherObjectsForEntrants(phasegroupids);
 
         //Update each players' rank for each match
         readbracket.updateSmashersRanksForEachRound();
@@ -114,7 +111,7 @@ public class ReadBracket {
             .forEach(System.out::println);
     }
 
-    private void iterateSets(JSONArray sets) throws JSONException {
+    private void getAllWinnersAndLosersForEachSet(JSONArray sets) throws JSONException {
         //So far only showing how to iterate bracket, not storing the data yet. Need to figure out how to process
         // results for a rank api to know how to iterate
         for (int i = 0; i < sets.length(); i++) {
@@ -161,31 +158,34 @@ public class ReadBracket {
 
     }
 
+    private void getAllPlayedSetsForTournament(List<String> phaseGroupIds) throws Exception {
+        winnerAndLoserIdsForEverSetPlayedAtAtournament = new ArrayList<>();
 
-    private void iteratePlayers(List<String> players){
+        for (String id : phaseGroupIds) {
+            String phaseGroupApiEndpoint = "/phase_group/" + id + "?expand[]=sets";
 
+            String getPhaseGroupJson = getJsonForRequest(phaseGroupApiEndpoint);
+            jsonobject = new JSONObject(getPhaseGroupJson);
+
+            JSONArray sets = jsonobject.getJSONObject("entities").getJSONArray("sets");
+            getAllWinnersAndLosersForEachSet(sets);
+        }
 
     }
 
 
-    private void iterateGroups(List<String> phaseGroupIds) throws Exception {
+    private void createSmasherObjectsForEntrants(List<String> phaseGroupIds) throws Exception {
 
-        //Refactor this method to split entrants and sets??
-
-        playerIdsMappedToEntrantIds = new HashMap<>();
         smashers = new ArrayList<>();
-        winnerAndLoserIdsForEverSetPlayedAtAtournament = new ArrayList<>();
+        playerIdsMappedToEntrantIds = new HashMap<>();
 
         for (String id : phaseGroupIds) {
-            String phaseGroupApiEndpoint = "/phase_group/" + id + "?expand[]=entrants&expand[]=sets";
+            String phaseGroupApiEndpoint = "/phase_group/" + id + "?expand[]=entrants";
 
             String getPhaseGroupJson = getJsonForRequest(phaseGroupApiEndpoint);
             jsonobject = new JSONObject(getPhaseGroupJson);
 
             JSONArray playerNames = jsonobject.getJSONObject("entities").getJSONArray("player");
-            JSONArray sets = jsonobject.getJSONObject("entities").getJSONArray("sets");
-
-            iterateSets(sets);
 
             for (int i = 0; i < playerNames.length(); i += 1) {
                 String entrantId = playerNames.getJSONObject(i).get("entrantId").toString();
@@ -193,7 +193,6 @@ public class ReadBracket {
                 String playerTag = playerNames.getJSONObject(i).get("gamerTag").toString();
 
                 if (!playerIdsMappedToEntrantIds.containsKey(playerId)) {
-
                     if (!smashers.contains(entrantId)) {
                         createInstanceOfSmashersBeforeGeneratingNewRanks(entrantId, playerId, playerTag);
                     }
@@ -202,6 +201,7 @@ public class ReadBracket {
             }
         }
     }
+
 
     private String getJsonForRequest(String path) throws Exception {
         return consumeApi.parseGetRequestToJson(path);
