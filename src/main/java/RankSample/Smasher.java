@@ -17,6 +17,19 @@ public class Smasher<S> extends Player {
     private static GameInfo defaultGameInfo = GameInfo.getDefaultGameInfo();
     public static final Rating DEFAULTRATING = defaultGameInfo.getDefaultRating();
     private String entrantId;
+    private String playerTag;
+
+    @Override
+    public String toString() {
+        return "Smasher{" +
+            "id=" + id +
+            ", mean=" + mean +
+            ", conservativeStandardDeviationMultiplier=" + conservativeStandardDeviationMultiplier +
+            ", deviation=" + deviation +
+            ", entrantId='" + entrantId + '\'' +
+            ", playerTag='" + playerTag + '\'' +
+            '}';
+    }
 
     public Smasher(S id, Rating rating){
         super(id);
@@ -70,14 +83,6 @@ public class Smasher<S> extends Player {
         }
     }
 
-    @Override
-    public String toString() {
-        return "Smasher: "+ id +" { "+
-            "mean=" + mean +
-            ", deviation=" + deviation +
-            '}';
-    }
-
     public void setMeanDeviationAndDeviationMultiplier(double mean, double deviation,double conservativeStandardDeviationMultiplier){
         this.mean = mean;
         this.deviation = deviation;
@@ -90,5 +95,13 @@ public class Smasher<S> extends Player {
 
     public void setEntrantId(String entrantId) {
         this.entrantId = entrantId;
+    }
+
+    public void setPlayerTag(String playerTag) {
+        this.playerTag = playerTag;
+    }
+
+    public String getPlayerTag() {
+        return playerTag;
     }
 }

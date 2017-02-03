@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,20 +27,21 @@ public class ReadBracket {
         //figure out contestants for tournament
 
         //Returns each phase group id for each bracket played for event
-        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-34", "melee-singles");
+        List<String> phasegroupids = readbracket.returnPhaseGroupIds("super-south-bay-sunday-22", "melee-singles");
         readbracket.iterateGroups(phasegroupids);
 
         //Creating instances of new smashers, with default rating and player id + entrant id so far
-        readbracket.createInstanceOfSmashersBeforeGeneratingNewRanks();
+        //  readbracket.createInstanceOfSmashersBeforeGeneratingNewRanks();
 
         //Update each players' rank for each match
         readbracket.updateSmashersRanksForEachRound();
         readbracket.sortSmashersByRank();
     }
 
-    private void createInstanceOfSmashersBeforeGeneratingNewRanks() {
-        for (Map.Entry<String, String> players : playerIdsMappedToEntrantIds.entrySet()) {
-            Smasher<String> smasher = new Smasher<>(players.getKey(), players.getValue());
+    private void createInstanceOfSmashersBeforeGeneratingNewRanks(String entrantId, String playerId, String playerTag) {
+        if (!smashers.contains(entrantId)) {
+            Smasher<String> smasher = new Smasher<>(playerId, entrantId);
+            smasher.setPlayerTag(playerTag);
             smasher.setDefaultRating();
             smashers.add(smasher);
         }
@@ -110,6 +110,7 @@ public class ReadBracket {
             .stream()
             .sorted((e2, e1) -> Double.compare(e1.getMean(),
                 e2.getMean()))
+            //.count();
             .forEach(System.out::println);
     }
 
@@ -160,12 +161,20 @@ public class ReadBracket {
 
     }
 
+
+    private void iteratePlayers(List<String> players){
+
+
+    }
+
+
     private void iterateGroups(List<String> phaseGroupIds) throws Exception {
+
+        //Refactor this method to split entrants and sets??
 
         playerIdsMappedToEntrantIds = new HashMap<>();
         smashers = new ArrayList<>();
         winnerAndLoserIdsForEverSetPlayedAtAtournament = new ArrayList<>();
-
 
         for (String id : phaseGroupIds) {
             String phaseGroupApiEndpoint = "/phase_group/" + id + "?expand[]=entrants&expand[]=sets";
@@ -184,6 +193,10 @@ public class ReadBracket {
                 String playerTag = playerNames.getJSONObject(i).get("gamerTag").toString();
 
                 if (!playerIdsMappedToEntrantIds.containsKey(playerId)) {
+
+                    if (!smashers.contains(entrantId)) {
+                        createInstanceOfSmashersBeforeGeneratingNewRanks(entrantId, playerId, playerTag);
+                    }
                     playerIdsMappedToEntrantIds.put(playerId, entrantId);
                 }
             }
