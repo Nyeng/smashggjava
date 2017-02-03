@@ -1,9 +1,11 @@
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.gt;
 
 import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
@@ -16,6 +18,8 @@ import RankSample.Smasher;
  * Created by k79689 on 03.02.17.
  */
 public class TestSmashersDataobjects {
+
+    //http://mongodb.github.io/mongo-java-driver/3.4/driver/getting-started/quick-start/
 
     private MongoClientURI connectionString;
     private MongoClient mongoClient;
@@ -80,6 +84,13 @@ public class TestSmashersDataobjects {
         Document myDoc = collection.find(eq("id", "2343434")).first();
         System.out.println(myDoc.toJson());
 
+    }
+
+    @Test
+    public void getAllDocumentsThatMatchFilter(){
+        Block<Document> printBlock = document -> System.out.println(document.toJson());
+
+        collection.find(gt("id", "2343434")).forEach(printBlock);
     }
 
 }
