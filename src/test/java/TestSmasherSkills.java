@@ -22,7 +22,6 @@ public class TestSmasherSkills {
 
     @Test
     public void measureRanksOnOneWin() {
-
         //Creating instances of SMashers with same default rating
         Smasher<String> smasherWinner = new Smasher<>("Vdogg", Smasher.DEFAULTRATING);
         Smasher<String> smasherLoser = new Smasher<>("Aske", Smasher.DEFAULTRATING);
