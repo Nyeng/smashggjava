@@ -25,32 +25,24 @@ public class ReadBracket {
 
     public static void main(String[] args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
-
         //figure out contestants for tournament
 
         //Returns each phase group id for each bracket played for event
         List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-34", "melee-singles");
         readbracket.iterateGroups(phasegroupids);
 
-        System.out.println("hashmap size " + readbracket.playerIdsMappedToEntrantIds.size());
-
-        for(String value : readbracket.playerIdsMappedToEntrantIds.keySet()){
-            System.out.println(value);
-        }
-
         //Creating instances of new smashers, with default rating and player id + entrant id so far
-    //    readbracket.createInstanceOfSmashersBeforeGeneratingNewRanks();
+        readbracket.createInstanceOfSmashersBeforeGeneratingNewRanks();
 
         //Update each players' rank for each match
-       // readbracket.updateSmashersRanksForEachRound();
-      //  readbracket.sortSmashersByRank();
+        readbracket.updateSmashersRanksForEachRound();
+        readbracket.sortSmashersByRank();
     }
 
     private void createInstanceOfSmashersBeforeGeneratingNewRanks() {
         for (Map.Entry<String, String> players : playerIdsMappedToEntrantIds.entrySet()) {
             Smasher<String> smasher = new Smasher<>(players.getKey(), players.getValue());
             smasher.setDefaultRating();
-            //createListOfSmashers(smasher);
             smashers.add(smasher);
         }
     }
@@ -124,8 +116,6 @@ public class ReadBracket {
     private void iterateSets(JSONArray sets) throws JSONException {
         //So far only showing how to iterate bracket, not storing the data yet. Need to figure out how to process
         // results for a rank api to know how to iterate
-        winnerAndLoserIdsForEverSetPlayedAtAtournament = new ArrayList<>();
-
         for (int i = 0; i < sets.length(); i++) {
             JSONObject setsObjects = sets.getJSONObject(i);
 
@@ -174,7 +164,7 @@ public class ReadBracket {
 
         playerIdsMappedToEntrantIds = new HashMap<>();
         smashers = new ArrayList<>();
-
+        winnerAndLoserIdsForEverSetPlayedAtAtournament = new ArrayList<>();
 
 
         for (String id : phaseGroupIds) {
@@ -188,21 +178,16 @@ public class ReadBracket {
 
             iterateSets(sets);
 
-            //(playerNames.length());
-
             for (int i = 0; i < playerNames.length(); i += 1) {
                 String entrantId = playerNames.getJSONObject(i).get("entrantId").toString();
                 String playerId = playerNames.getJSONObject(i).get("id").toString();
-                String playerTag =  playerNames.getJSONObject(i).get("gamerTag" ).toString();
+                String playerTag = playerNames.getJSONObject(i).get("gamerTag").toString();
 
-                if(!playerIdsMappedToEntrantIds.containsKey(playerId)){
+                if (!playerIdsMappedToEntrantIds.containsKey(playerId)) {
                     playerIdsMappedToEntrantIds.put(playerId, entrantId);
-                    System.out.println("adding player "+ playerTag);
                 }
             }
         }
-
-
     }
 
     private String getJsonForRequest(String path) throws Exception {
