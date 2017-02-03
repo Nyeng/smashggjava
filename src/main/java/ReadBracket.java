@@ -11,7 +11,7 @@ import RankSample.Smasher;
 import RankSample.TrueSkillImplementation;
 
 /**
- * Created by k79689 on 17.01.17.
+ * Created by Vdawg on 17.01.17.
  */
 public class ReadBracket {
 
@@ -26,16 +26,24 @@ public class ReadBracket {
     public static void main(String[] args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
 
+        //figure out contestants for tournament
+
         //Returns each phase group id for each bracket played for event
-        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-33", "melee-singles");
+        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-34", "melee-singles");
         readbracket.iterateGroups(phasegroupids);
 
+        System.out.println("hashmap size " + readbracket.playerIdsMappedToEntrantIds.size());
+
+        for(String value : readbracket.playerIdsMappedToEntrantIds.keySet()){
+            System.out.println(value);
+        }
+
         //Creating instances of new smashers, with default rating and player id + entrant id so far
-        readbracket.createInstanceOfSmashersBeforeGeneratingNewRanks();
+    //    readbracket.createInstanceOfSmashersBeforeGeneratingNewRanks();
 
         //Update each players' rank for each match
-        readbracket.updateSmashersRanksForEachRound();
-        readbracket.sortSmashersByRank();
+       // readbracket.updateSmashersRanksForEachRound();
+      //  readbracket.sortSmashersByRank();
     }
 
     private void createInstanceOfSmashersBeforeGeneratingNewRanks() {
@@ -104,7 +112,7 @@ public class ReadBracket {
         }
     }
 
-    public void sortSmashersByRank() {
+    private void sortSmashersByRank() {
         // Smashers sorted:
         smashers
             .stream()
@@ -113,7 +121,7 @@ public class ReadBracket {
             .forEach(System.out::println);
     }
 
-    public void iterateSets(JSONArray sets) throws JSONException {
+    private void iterateSets(JSONArray sets) throws JSONException {
         //So far only showing how to iterate bracket, not storing the data yet. Need to figure out how to process
         // results for a rank api to know how to iterate
         winnerAndLoserIdsForEverSetPlayedAtAtournament = new ArrayList<>();
@@ -145,7 +153,7 @@ public class ReadBracket {
         }
     }
 
-    public List<String> returnPhaseGroupIds(String tournamentName, String eventName) throws Exception {
+    private List<String> returnPhaseGroupIds(String tournamentName, String eventName) throws Exception {
 
         String apiPath = "/tournament/" + tournamentName + "/event/" + eventName + "?expand[]=groups";
 
@@ -162,7 +170,12 @@ public class ReadBracket {
 
     }
 
-    public void iterateGroups(List<String> phaseGroupIds) throws Exception {
+    private void iterateGroups(List<String> phaseGroupIds) throws Exception {
+
+        playerIdsMappedToEntrantIds = new HashMap<>();
+        smashers = new ArrayList<>();
+
+
 
         for (String id : phaseGroupIds) {
             String phaseGroupApiEndpoint = "/phase_group/" + id + "?expand[]=entrants&expand[]=sets";
@@ -175,21 +188,21 @@ public class ReadBracket {
 
             iterateSets(sets);
 
-            smashers = new ArrayList<>(playerNames.length());
-
-            playerIdsMappedToEntrantIds = new HashMap<>(playerNames.length());
+            //(playerNames.length());
 
             for (int i = 0; i < playerNames.length(); i += 1) {
                 String entrantId = playerNames.getJSONObject(i).get("entrantId").toString();
                 String playerId = playerNames.getJSONObject(i).get("id").toString();
-                //String playerTag =  playerNames.getJSONObject(i).get("gamerTag" ).toString();
-                String value = playerIdsMappedToEntrantIds.get(playerId);
-                if (value == null) {
-                    //adds same player twice, but keeps them unique cus HashMap
+                String playerTag =  playerNames.getJSONObject(i).get("gamerTag" ).toString();
+
+                if(!playerIdsMappedToEntrantIds.containsKey(playerId)){
                     playerIdsMappedToEntrantIds.put(playerId, entrantId);
+                    System.out.println("adding player "+ playerTag);
                 }
             }
         }
+
+
     }
 
     private String getJsonForRequest(String path) throws Exception {
