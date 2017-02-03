@@ -15,7 +15,6 @@ import RankSample.TrueSkillImplementation;
 public class ReadBracket {
 
     private JSONObject jsonobject;
-    private HashMap<String, String> playerIdsMappedToEntrantIds;
     private List<JSONObject> winnerAndLoserIdsForEverSetPlayedAtAtournament;
     private List<Smasher<String>> smashers;
 
@@ -24,6 +23,8 @@ public class ReadBracket {
 
     public static void main(String[] args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
+
+        long startTime = System.currentTimeMillis();
         //figure out contestants for tournament
         //Returns each phase group id for each bracket played for event
         List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-38", "melee-singles");
@@ -33,6 +34,9 @@ public class ReadBracket {
         //Update each players' rank for each match
         readbracket.updateSmashersRanksForEachRound();
         readbracket.sortSmashersByRank();
+
+        long endTime = System.currentTimeMillis();
+        System.out.println("Starttime minus endtime: " +(endTime-startTime));
     }
 
     private void createInstanceOfSmashersBeforeGeneratingNewRanks(String entrantId, String playerId, String playerTag) {
@@ -49,6 +53,7 @@ public class ReadBracket {
 
             Smasher<String> loser = null;
             Smasher<String> winner = null;
+
             for (Smasher<String> smasher : smashers) {
                 String winnerId = null;
                 String entrant2Id = null;
@@ -159,33 +164,51 @@ public class ReadBracket {
     }
 
     private void getAllPlayedSetsForTournament(List<String> phaseGroupIds) throws Exception {
+
         winnerAndLoserIdsForEverSetPlayedAtAtournament = new ArrayList<>();
 
         for (String id : phaseGroupIds) {
+
+            //Consider expanding on entrants here to save 50% of api requests used
             String phaseGroupApiEndpoint = "/phase_group/" + id + "?expand[]=sets";
 
-            String getPhaseGroupJson = getJsonForRequest(phaseGroupApiEndpoint);
-            jsonobject = new JSONObject(getPhaseGroupJson);
+            try {
+                String getPhaseGroupJson = getJsonForRequest(phaseGroupApiEndpoint);
+                jsonobject = new JSONObject(getPhaseGroupJson);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-            JSONArray sets = jsonobject.getJSONObject("entities").getJSONArray("sets");
-            getAllWinnersAndLosersForEachSet(sets);
+            try {
+                JSONArray sets = jsonobject.getJSONObject("entities").getJSONArray("sets");
+                getAllWinnersAndLosersForEachSet(sets);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
-
     }
-
 
     private void createSmasherObjectsForEntrants(List<String> phaseGroupIds) throws Exception {
 
         smashers = new ArrayList<>();
-        playerIdsMappedToEntrantIds = new HashMap<>();
+        HashMap<String, String> playerIdsMappedToEntrantIds = new HashMap<>();
 
         for (String id : phaseGroupIds) {
             String phaseGroupApiEndpoint = "/phase_group/" + id + "?expand[]=entrants";
 
-            String getPhaseGroupJson = getJsonForRequest(phaseGroupApiEndpoint);
-            jsonobject = new JSONObject(getPhaseGroupJson);
+            try {
+                String getPhaseGroupJson = getJsonForRequest(phaseGroupApiEndpoint);
+                jsonobject = new JSONObject(getPhaseGroupJson);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-            JSONArray playerNames = jsonobject.getJSONObject("entities").getJSONArray("player");
+            JSONArray playerNames = null;
+            try {
+                playerNames = jsonobject.getJSONObject("entities").getJSONArray("player");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             for (int i = 0; i < playerNames.length(); i += 1) {
                 String entrantId = playerNames.getJSONObject(i).get("entrantId").toString();
@@ -202,9 +225,8 @@ public class ReadBracket {
         }
     }
 
-
     private String getJsonForRequest(String path) throws Exception {
-        return consumeApi.parseGetRequestToJson(path);
+        return consumeApi.returnJsonForGetRequest(path);
     }
 
 }
