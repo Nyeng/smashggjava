@@ -12,21 +12,6 @@ import org.apache.http.util.EntityUtils;
  */
 public class ConsumeApi {
 
-
-    public static void main(String[] args){
-//
-//        processing api with url https://api.smash.gg//phase_group/313999?expand[]=sets
-//        processing api with url https://api.smash.gg//phase_group/314000?expand[]=sets
-//        processing api with url https://api.smash.gg//phase_group/314001?expand[]=sets
-
-        ConsumeApi api = new ConsumeApi();
-
-        api.returnJsonForGetRequest("phase_group/313999?expand[]=sets");
-        api.returnJsonForGetRequest("phase_group/314000?expand[]=sets");
-        api.returnJsonForGetRequest("phase_group/314001?expand[]=sets");
-
-    }
-
     public String getBaseApiEndpoint(){
         return "https://api.smash.gg";
     }

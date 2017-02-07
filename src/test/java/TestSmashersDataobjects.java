@@ -1,5 +1,8 @@
 import static com.mongodb.client.model.Filters.eq;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +24,7 @@ public class TestSmashersDataobjects {
     //http://mongodb.github.io/mongo-java-driver/3.4/driver/getting-started/quick-start/
 
     private MongoCollection<Document> collection;
-    MongoDatabase database;
+    private MongoDatabase database;
 
     @Before
     public void setup() {
@@ -111,10 +114,38 @@ public class TestSmashersDataobjects {
         .append("mean", 90)
         ;
 
-
         System.out.println(myDoc.toJson());
 
         findAllDocumentsInCollection();
+    }
+
+    @Test
+    public void iterateAndUpdatePlayerObjects(){
+        //Create basis
+        List<Smasher<String>> smashers = new ArrayList<>();
+        String[] names = new String[]{"Aske","Sverre","Vdogg"};
+        Smasher<String> smasher;
+
+        for(String name : names){
+            smashers.add(smasher = new Smasher<>(name));
+        }
+
+        //Create database scheme like this:
+//        id:
+//        2232,
+//            mean:232,
+//            deviation:232,
+//            "tournaments" : [
+//        {
+//            "tournament-id":"house-of-smash-43", "entrant-id":"98943"
+//        },
+//        {
+//            "tournament-id":"drommelan-23", "entrant-id":"4343"
+//        }
+//        ],
+
+
+
 
 
     }
