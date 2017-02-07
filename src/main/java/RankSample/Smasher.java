@@ -31,12 +31,6 @@ public class Smasher<S> extends Player {
             '}';
     }
 
-    public Smasher(S id, Rating rating){
-        super(id);
-        this.id = id;
-        setRating(rating);
-    }
-
     public Smasher(S id){
         super(id);
         this.id = id;

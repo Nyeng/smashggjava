@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.Document;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,11 +20,17 @@ import RankSample.Smasher;
 /**
  * Created by k79689 on 03.02.17.
  */
+
+//@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestSmashersDataobjects {
 
     //http://mongodb.github.io/mongo-java-driver/3.4/driver/getting-started/quick-start/
 
     private MongoCollection<Document> collection;
+    private String firstPlayer = "01";
+    private String secondPlayer = "22";
+    private String thirdPlayer = "33";
+
     private MongoDatabase database;
 
     @Before
@@ -33,22 +40,33 @@ public class TestSmashersDataobjects {
 
         database = mongoClient.getDatabase("mydb");
         collection = database.getCollection("Smashers");
+
+        insertOneToCollection();
+        insertSeveralToCollection();
+        //Insert to mongodb will create collection if collection doesn't already exist
     }
 
-    @Test
-    public void mongoDBTest() {
+    @After
+    public void dropDatabase(){
+       database.drop();
+    }
 
+    private void findAllDocumentsInCollection(){
+        System.out.println("Outputting all documents created so far");
+        try (MongoCursor<Document> cursor = collection.find().iterator()) {
+            while (cursor.hasNext()) {
+                System.out.println(cursor.next().toJson());
+            }
+        }
+    }
+
+    private void insertOneToCollection() {
         //Creating instances of SMashers with same default rating
-        Smasher<String> smasherWinner = new Smasher<>("2343434", Smasher.DEFAULTRATING);
-        Smasher<String> smasherLoser = new Smasher<>("232343", Smasher.DEFAULTRATING);
+        Smasher<String> smasherWinner = new Smasher<>(firstPlayer);
 
         smasherWinner.setMeanDeviationAndDeviationMultiplier(44, 3, 3);
         smasherWinner.setPlayerTag("Vdawg");
         smasherWinner.setEntrantId("111331");
-
-        smasherLoser.setMeanDeviationAndDeviationMultiplier(60, 4, 4);
-        smasherLoser.setEntrantId("111332");
-        smasherLoser.setPlayerTag("Sverre");
 
         Document doc = new Document("id",smasherWinner.getId())
             .append("mean", smasherWinner.getMean())
@@ -57,66 +75,44 @@ public class TestSmashersDataobjects {
             .append("playertag",smasherWinner.getPlayerTag());
 
         collection.insertOne(doc);
-        System.out.println("Collection count "+ collection.count());
     }
 
-    @Test
-    public void findFirstCollection(){
-        //Finds first document
-        Document myDoc = collection.find().first();
-        System.out.println(myDoc.toJson());
-    }
+    private void insertSeveralToCollection() {
+        Smasher<String> smasherWinner = new Smasher<>(secondPlayer);
 
-    @Test
-    public void findAllDocumentsInCollection(){
-        try (MongoCursor<Document> cursor = collection.find().iterator()) {
-            while (cursor.hasNext()) {
-                System.out.println(cursor.next().toJson());
-            }
-        }
+        smasherWinner.setMeanDeviationAndDeviationMultiplier(33, 5.0, 3.1);
+
+        smasherWinner.setPlayerTag("Sverre");
+
+        Document doc = new Document("id",smasherWinner.getId())
+            .append("mean", smasherWinner.getMean())
+            .append("deviation", smasherWinner.getDeviation())
+            .append("deviationMultiplier", smasherWinner.getConservativeStandardDeviationMultiplier())
+            .append("playertag",smasherWinner.getPlayerTag());
+
+        Smasher<String> smasherLoser = new Smasher<>(thirdPlayer);
+        smasherLoser.setMeanDeviationAndDeviationMultiplier(5, 10, 2);
+
+        smasherLoser.setPlayerTag("AskeLink");
+
+        Document doc2 = new Document("id",smasherLoser.getId())
+            .append("mean", smasherLoser.getMean())
+            .append("deviation", smasherLoser.getDeviation())
+            .append("deviationMultiplier", smasherLoser.getConservativeStandardDeviationMultiplier())
+            .append("playertag",smasherLoser.getPlayerTag());
+
+        smasherLoser.setPlayerTag("AskeLink");
+
+        List<Document> documents = new ArrayList<>();
+        documents.add(doc);
+        documents.add(doc2);
+
+        collection.insertMany(documents);
     }
 
     @Test
     public void getSingleDocumentThatMatchesFilter(){
-        Document myDoc = collection.find(eq("id", "2343434")).first();
-        System.out.println(myDoc.toJson());
-    }
-
-    @Test
-    public void updateOneValueInCollection() {
-
-        BasicDBObject searchQuery = new BasicDBObject("playertag", "AskeLink");
-        BasicDBObject updateFields = new BasicDBObject();
-
-        updateFields.append("playertag", "AskeLink");
-        updateFields.append("mean",5.0);
-        updateFields.append("deviation", 11);
-        updateFields.append("id","242424");
-
-
-        BasicDBObject setQuery = new BasicDBObject();
-        setQuery.append("$set", updateFields);
-        collection.updateOne(searchQuery, setQuery);
-
-
-        Document myDoc = collection.find(eq("id", "2343434")).first();
-        System.out.println(myDoc.toJson());
-    }
-
-    @Test
-    public void updateSeveralValuesInCollection() {
-        String id = "2343434";
-
-        Document myDoc = collection.find(eq("id", id)).first();
-
-        myDoc.append("playertag","Bose")
-        .append("deviation", 3.0)
-        .append("mean", 90)
-        ;
-
-        System.out.println(myDoc.toJson());
-
-        findAllDocumentsInCollection();
+        Document myDoc = collection.find(eq("id", firstPlayer)).first();
     }
 
     @Test
@@ -124,11 +120,18 @@ public class TestSmashersDataobjects {
         //Create basis
         List<Smasher<String>> smashers = new ArrayList<>();
         String[] names = new String[]{"Aske","Sverre","Vdogg"};
-        Smasher<String> smasher;
 
+        int i = 222;
         for(String name : names){
-            smashers.add(smasher = new Smasher<>(name));
+            String id = String.valueOf(i+222);
+            smashers.add(new Smasher<>(name,id));
         }
+
+
+        //TODO
+
+        //Create smasher and see if it gets created if already exists
+
 
         //Create database scheme like this:
 //        id:
@@ -145,9 +148,55 @@ public class TestSmashersDataobjects {
 //        ],
 
 
+    }
+
+    @Test
+    public void updateOneValueInCollection() {
+        //inserting 3 players
+        BasicDBObject searchQuery = new BasicDBObject("id", firstPlayer);
+
+        System.out.println("Fant search query for spiller" + searchQuery);
+
+        BasicDBObject updateFields = new BasicDBObject();
+
+        updateFields.append("playertag", "Jonas");
+        updateFields.append("mean",5.0);
+        updateFields.append("deviation", 11);
+
+        BasicDBObject setQuery = new BasicDBObject();
+        setQuery.append("$set", updateFields);
+        collection.updateOne(searchQuery, setQuery);
+
+        Document myDoc = collection.find(eq("playertag", "Jonas")).first();
+
+        System.out.println("Skriver ut collection basert på Id til first player etter å ha oppdatert firstPlayer med new spiller som er Jonas");
+        System.out.println(myDoc.toJson());
+
+        System.out.println("Skriver ut alle etter å ha oppdatert jonas");
+        findAllDocumentsInCollection();
+    }
+
+    @Test
+    public void EupdateCollectionForIdThatAlreadyExists(){
+        System.out.println("Skriver ut de som er oppdatert først ");
+        findAllDocumentsInCollection();
+
+        Smasher<String> smasherLoser = new Smasher<>(thirdPlayer);
+        smasherLoser.setMeanDeviationAndDeviationMultiplier(5, 10, 2);
+
+        smasherLoser.setPlayerTag("AskeLink");
+
+        Document doc2 = new Document("id",smasherLoser.getId())
+            .append("mean", smasherLoser.getMean())
+            .append("deviation", smasherLoser.getDeviation())
+            .append("deviationMultiplier", smasherLoser.getConservativeStandardDeviationMultiplier())
+            .append("playertag",smasherLoser.getPlayerTag());
 
 
 
+        System.out.println("skriver ut alle etter forsøk på å oppdatere ting som ikke skal legges til: Deebug");
+        findAllDocumentsInCollection();
     }
 
 }
+

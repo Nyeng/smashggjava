@@ -39,28 +39,4 @@ public class TrueSkillImplementation {
             Rating.get(loser).getConservativeStandardDeviationMultiplier());
     }
 
-    public static void main(String[] args) {
-
-        System.out.println("μ means average skill of player and σσ is a confidence of the guessed rating");
-        TrueSkillImplementation generator = new TrueSkillImplementation();
-
-        Smasher<String> vdogg = new Smasher<>("Vdogg", Smasher.DEFAULTRATING);
-        Smasher<String> aske = new Smasher<>("Aske", Smasher.DEFAULTRATING);
-
-        //smasherOne not used for now, update that later to use third parameter to choose winner
-
-        for (int i = 0; i < 5; i++) {
-            //looping through 10 wins for one player
-            generator.updatePlayerRanks(vdogg, aske);
-        }
-
-        Smasher<String> sverre = new Smasher<>("Sverre", (Smasher.DEFAULTRATING));
-        sverre.setMeanDeviationAndDeviationMultiplier(50.0, 1.0, 1.0);
-
-        //Low ranked player gets win vs high rank player
-        generator.updatePlayerRanks(sverre, vdogg);
-
-        System.out.println(sverre.getRating());
-    }
-
 }

@@ -17,8 +17,9 @@ Ideas:
 - [x] Find a rank api to use as baseline for ranking players (JSkills)
 - [X] ~~Implement comparator for List of Smashers: http://stackoverflow.com/questions/5805602/how-to-sort-list-of-objects-by-some-property~~
   - [X] Use Java 8 Streams instead
+  - [ ] Frontend will handle sorting functionality, figure out which queries backend handles
+- [ ] Store player data to MongoDB: started, not done prototyping
 - [ ] Iterate Challonge's bracket API
-- [ ] Store player data to database (Mongo db?)
 - [ ] Provide an API service (Jersey?)
 
 
@@ -35,15 +36,12 @@ Once decided upon, they will  be be added in the todo-list.
   * User submission in the format of:
   * https://api.smash.gg/tournament/house-of-smash-31/event/melee-singles, the rest is taken care of in the application 
 
-
-
 **Technicalities**
-- Avoid use of frameworks for backend functionality, use libraries instead. 
 - For web: http://nikgrozev.com/2014/10/16/rest-with-embedded-jetty-and-jersey-in-a-single-jar-step-by-step/
-- Jackson parsing: http://wiki.fasterxml.com/JacksonInFiveMinutes#A.22Raw.22_Data_Binding_Example
-- JSON java parser API example http://www.journaldev.com/2324/jackson-json-java-parser-api-example-tutorial
 - Java implementation of True Skill: https://github.com/nsp/JSkills
-- https://github.com/goochjs/glicko2
-- Consider using http://vuejs.org/ ? 
+- Consider using http://vuejs.org/ for frontend implementation?
+
+**Known weaknesses**
+- Gameinfo is never updatead when updating new ranks. Algorithm / player ranks are still updated according to this site: http://boson.research.microsoft.com/trueskill/rankcalculator.aspx
 
 

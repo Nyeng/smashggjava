@@ -23,8 +23,8 @@ public class TestSmasherSkills {
     @Test
     public void measureRanksOnOneWin() {
         //Creating instances of SMashers with same default rating
-        Smasher<String> smasherWinner = new Smasher<>("Vdogg", Smasher.DEFAULTRATING);
-        Smasher<String> smasherLoser = new Smasher<>("Aske", Smasher.DEFAULTRATING);
+        Smasher<String> smasherWinner = new Smasher<>("Vdogg","playerid");
+        Smasher<String> smasherLoser = new Smasher<>("Aske", "playerID2");
 
         for (int i = 0; i < 2; i++) {
             //looping through i wins for one player
@@ -45,11 +45,13 @@ public class TestSmasherSkills {
         double deviationMultiplierLoser = 5;
         double deviationLoser = 4;
 
-        Smasher<String> winner = new Smasher<>("Vdawg");
+        Smasher<String> winner = new Smasher<>("Vdawg","playerid2");
         winner.setMeanDeviationAndDeviationMultiplier(meanWinner, deviationWinner, DeviationMultiplierWinner);
 
-        Smasher<String> loser = new Smasher<>("Zorc");
+        Smasher<String> loser = new Smasher<>("Zorc","playerid3");
         loser.setMeanDeviationAndDeviationMultiplier(meanLoser, deviationLoser, deviationMultiplierLoser);
+
+        trueSkill.updatePlayerRanks(winner,loser);
 
         assertThat(
             "Winner should be created with highest rank: " + winner.getRating() + " losers rank: " + loser.getRating(),

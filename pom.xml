@@ -56,6 +56,16 @@
       <artifactId>jskills</artifactId>
       <version>0.9.1-SNAPSHOT</version>
     </dependency>
+
+     <!-- Consider using this one in the future since it's more recent + using Scala -->
+    <!--<dependency>-->
+      <!--<groupId>info.daviot</groupId>-->
+      <!--<artifactId>TrueSkill</artifactId>-->
+      <!--<version>LATEST</version>-->
+    <!--</dependency>-->
+
+
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
