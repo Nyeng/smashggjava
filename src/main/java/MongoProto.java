@@ -10,21 +10,28 @@ import com.mongodb.client.MongoDatabase;
  */
 public class MongoProto {
 
+    private MongoCollection<Document> collection;
+
+    public void setCollection(MongoCollection<Document> collection) {
+        this.collection = collection;
+    }
+
+    public MongoCollection<Document> getCollection() {
+        return collection;
+    }
+
+    public MongoProto() {
+        MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+        MongoClient mongoClient = new MongoClient(connectionString);
+        MongoDatabase database = mongoClient.getDatabase("mydb");
+        MongoCollection<Document> collection = database.getCollection("test");
+    }
 
     public static void main(String[]args){
-
-
         MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
         MongoClient mongoClient = new MongoClient(connectionString);
 
         MongoDatabase database = mongoClient.getDatabase("mydb");
         MongoCollection<Document> collection = database.getCollection("test");
-
-
-
-
-
-
     }
-
 }

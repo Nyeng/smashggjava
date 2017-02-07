@@ -6,6 +6,7 @@ import java.util.List;
 import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mongodb.BasicDBObject;
@@ -127,7 +128,6 @@ public class TestSmashersDataobjects {
             smashers.add(new Smasher<>(name,id));
         }
 
-
         //TODO
 
         //Create smasher and see if it gets created if already exists
@@ -146,12 +146,13 @@ public class TestSmashersDataobjects {
 //            "tournament-id":"drommelan-23", "entrant-id":"4343"
 //        }
 //        ],
-
-
     }
 
     @Test
     public void updateOneValueInCollection() {
+
+        System.out.println("skriver ut eksisterende collections: ");
+        findAllDocumentsInCollection();
         //inserting 3 players
         BasicDBObject searchQuery = new BasicDBObject("id", firstPlayer);
 
@@ -168,16 +169,15 @@ public class TestSmashersDataobjects {
         collection.updateOne(searchQuery, setQuery);
 
         Document myDoc = collection.find(eq("playertag", "Jonas")).first();
-
-        System.out.println("Skriver ut collection basert på Id til first player etter å ha oppdatert firstPlayer med new spiller som er Jonas");
         System.out.println(myDoc.toJson());
 
         System.out.println("Skriver ut alle etter å ha oppdatert jonas");
         findAllDocumentsInCollection();
     }
 
-    @Test
-    public void EupdateCollectionForIdThatAlreadyExists(){
+    @Test @Ignore //TODO: Fix
+    public void updateCollectionForIdThatAlreadyExists(){
+
         System.out.println("Skriver ut de som er oppdatert først ");
         findAllDocumentsInCollection();
 
@@ -192,11 +192,21 @@ public class TestSmashersDataobjects {
             .append("deviationMultiplier", smasherLoser.getConservativeStandardDeviationMultiplier())
             .append("playertag",smasherLoser.getPlayerTag());
 
+       // collection.updateOne(doc2);
 
 
         System.out.println("skriver ut alle etter forsøk på å oppdatere ting som ikke skal legges til: Deebug");
         findAllDocumentsInCollection();
     }
 
+    @Test
+    public void updateWhenNothingExists() throws Exception {
+        database.drop();
+
+
+
+
+
+    }
 }
 

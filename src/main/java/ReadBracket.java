@@ -2,9 +2,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
 
 import RankSample.Smasher;
 import RankSample.TrueSkillImplementation;
@@ -20,6 +24,9 @@ public class ReadBracket {
 
     private ConsumeApi consumeApi = new ConsumeApi();
     private TrueSkillImplementation trueskill = new TrueSkillImplementation();
+
+    static MongoProto mongo = new MongoProto();
+
 
     public static void main(String[] args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
@@ -40,9 +47,34 @@ public class ReadBracket {
     }
 
     private void createInstanceOfSmashersBeforeGeneratingNewRanks(String entrantId, String playerId, String playerTag) {
+        MongoCollection<Document> collection = mongo.getCollection();
+        //TODO: fix this one to update all at some point
+
         if (!smashers.contains(entrantId)) {
             Smasher<String> smasher = new Smasher<>(playerId, entrantId);
+            BasicDBObject searchQuery = new BasicDBObject("id", smasher.getId());
+            BasicDBObject updateFields = new BasicDBObject();
+
+            updateFields.append("playertag", playerTag);
+
+            if(searchQuery.containsField("mean")){
+                //update Smasher object with values from DB
+                double mean = (double) searchQuery.get("mean");
+                double deviation = (double) searchQuery.get("deviation");
+                double conservativeStandardDeviationMultiplier = (double) searchQuery.get("conservativeStandardDeviationMultiplier");
+                smasher.setMeanDeviationAndDeviationMultiplier(mean,deviation,conservativeStandardDeviationMultiplier);
+            }
+
+            updateFields.append("mean",5.0);
+            updateFields.append("deviation", 11);
+
+            BasicDBObject setQuery = new BasicDBObject();
+            setQuery.append("$set", updateFields);
+            collection.updateOne(searchQuery, setQuery);
+
             smasher.setPlayerTag(playerTag);
+
+            //Unless it already exists in database
             smasher.setDefaultRating();
             smashers.add(smasher);
         }
