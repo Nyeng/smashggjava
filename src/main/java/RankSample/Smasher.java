@@ -66,6 +66,7 @@ public class Smasher<S> extends Player {
         return rating;
     }
 
+
     public Rating setDefaultRating(){
         return DEFAULTRATING;
     }

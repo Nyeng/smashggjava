@@ -1,11 +1,10 @@
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.gt;
 
 import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mongodb.Block;
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
@@ -21,15 +20,13 @@ public class TestSmashersDataobjects {
 
     //http://mongodb.github.io/mongo-java-driver/3.4/driver/getting-started/quick-start/
 
-    private MongoClientURI connectionString;
-    private MongoClient mongoClient;
-    private MongoDatabase database;
-    MongoCollection<Document> collection;
+    private MongoCollection<Document> collection;
+    MongoDatabase database;
 
     @Before
     public void setup() {
-        connectionString = new MongoClientURI("mongodb://localhost:27017");
-        mongoClient = new MongoClient(connectionString);
+        MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+        MongoClient mongoClient = new MongoClient(connectionString);
 
         database = mongoClient.getDatabase("mydb");
         collection = database.getCollection("Smashers");
@@ -69,13 +66,10 @@ public class TestSmashersDataobjects {
 
     @Test
     public void findAllDocumentsInCollection(){
-        MongoCursor<Document> cursor = collection.find().iterator();
-        try {
+        try (MongoCursor<Document> cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
                 System.out.println(cursor.next().toJson());
             }
-        } finally {
-            cursor.close();
         }
     }
 
@@ -83,14 +77,46 @@ public class TestSmashersDataobjects {
     public void getSingleDocumentThatMatchesFilter(){
         Document myDoc = collection.find(eq("id", "2343434")).first();
         System.out.println(myDoc.toJson());
-
     }
 
     @Test
-    public void getAllDocumentsThatMatchFilter(){
-        Block<Document> printBlock = document -> System.out.println(document.toJson());
+    public void updateOneValueInCollection() {
 
-        collection.find(gt("id", "2343434")).forEach(printBlock);
+        BasicDBObject searchQuery = new BasicDBObject("playertag", "AskeLink");
+        BasicDBObject updateFields = new BasicDBObject();
+
+        updateFields.append("playertag", "AskeLink");
+        updateFields.append("mean",5.0);
+        updateFields.append("deviation", 11);
+        updateFields.append("id","242424");
+
+
+        BasicDBObject setQuery = new BasicDBObject();
+        setQuery.append("$set", updateFields);
+        collection.updateOne(searchQuery, setQuery);
+
+
+        Document myDoc = collection.find(eq("id", "2343434")).first();
+        System.out.println(myDoc.toJson());
+    }
+
+    @Test
+    public void updateSeveralValuesInCollection() {
+        String id = "2343434";
+
+        Document myDoc = collection.find(eq("id", id)).first();
+
+        myDoc.append("playertag","Bose")
+        .append("deviation", 3.0)
+        .append("mean", 90)
+        ;
+
+
+        System.out.println(myDoc.toJson());
+
+        findAllDocumentsInCollection();
+
+
     }
 
 }

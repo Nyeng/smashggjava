@@ -28,7 +28,6 @@ public class TestSmasherSkills {
 
         for (int i = 0; i < 2; i++) {
             //looping through i wins for one player
-
             trueSkill.updatePlayerRanks(smasherWinner, smasherLoser);
         }
 
@@ -51,8 +50,6 @@ public class TestSmasherSkills {
 
         Smasher<String> loser = new Smasher<>("Zorc");
         loser.setMeanDeviationAndDeviationMultiplier(meanLoser, deviationLoser, deviationMultiplierLoser);
-
-        System.out.println(winner.getRating());
 
         assertThat(
             "Winner should be created with highest rank: " + winner.getRating() + " losers rank: " + loser.getRating(),
