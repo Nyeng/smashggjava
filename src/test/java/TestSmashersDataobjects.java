@@ -41,7 +41,7 @@ public class TestSmashersDataobjects {
         MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
         MongoClient mongoClient = new MongoClient(connectionString);
 
-        database = mongoClient.getDatabase("mydb");
+        database = mongoClient.getDatabase("testdatabase");
         collection = database.getCollection("SmashersTesters");
 
         insertOneToCollection();
@@ -209,11 +209,53 @@ public class TestSmashersDataobjects {
 
 
     @Test
-    public void updateWhenNothingExists() throws Exception {
-        database.drop();
-
+    public void updateObjectWhenDuplicateId() throws Exception {
         insertOneToCollection();
 
+        database.drop();
+
+        String id = "01";
+        Smasher<String> smasherWinner = new Smasher<>(id);
+
+        smasherWinner.setMeanDeviationAndDeviationMultiplier(5, 3, 3);
+        smasherWinner.setPlayerTag("Vdawg");
+        smasherWinner.setEntrantId("111331");
+
+        Document doc = new Document("_id",smasherWinner.getId())
+            .append("mean", smasherWinner.getMean())
+            .append("deviation", smasherWinner.getDeviation())
+            .append("deviationMultiplier", smasherWinner.getConservativeStandardDeviationMultiplier())
+            .append("playertag",smasherWinner.getPlayerTag());
+
+        collection.insertOne(doc);
+
+
+        String idTwo = "02";
+        Smasher<String> newPLayer = new Smasher<>(idTwo);
+
+        newPLayer.setMeanDeviationAndDeviationMultiplier(5, 3, 3);
+        newPLayer.setPlayerTag("Vdawg");
+        newPLayer.setEntrantId("111331");
+
+        Document doc2 = new Document("_id",smasherWinner.getId())
+            .append("mean", smasherWinner.getMean())
+            .append("deviation", smasherWinner.getDeviation())
+            .append("deviationMultiplier", smasherWinner.getConservativeStandardDeviationMultiplier())
+            .append("playertag",smasherWinner.getPlayerTag());
+
+
+        // search for duplicates
+        Document documentPossiblyExist = collection.find(eq("playertag", smasherWinner.getPlayerTag())).first();
+        String playerTagExistingPlayer = (String) documentPossiblyExist.get("playertag");
+
+        System.out.println(newPLayer.getPlayerTag());
+
+        //TODO Create logic to handle duplicate tags
+
+        if (newPLayer.getPlayerTag().equals(playerTagExistingPlayer)){
+            System.out.println("Found duplicate values, now overwrite last smasher for new collection ");
+
+        }
 
 
     }
