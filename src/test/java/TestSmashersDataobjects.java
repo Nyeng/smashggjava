@@ -6,15 +6,18 @@ import java.util.List;
 import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.UpdateOptions;
 
 import RankSample.Smasher;
 
@@ -28,11 +31,10 @@ public class TestSmashersDataobjects {
     //http://mongodb.github.io/mongo-java-driver/3.4/driver/getting-started/quick-start/
 
     private MongoCollection<Document> collection;
-    private String firstPlayer = "01";
-    private String secondPlayer = "22";
-    private String thirdPlayer = "33";
-
+    private String firstPlayerId = "01";
     private MongoDatabase database;
+
+    Block<Document> printBlock = document -> System.out.println(document.toJson());
 
     @Before
     public void setup() {
@@ -40,7 +42,7 @@ public class TestSmashersDataobjects {
         MongoClient mongoClient = new MongoClient(connectionString);
 
         database = mongoClient.getDatabase("mydb");
-        collection = database.getCollection("Smashers");
+        collection = database.getCollection("SmashersTesters");
 
         insertOneToCollection();
         insertSeveralToCollection();
@@ -63,46 +65,49 @@ public class TestSmashersDataobjects {
 
     private void insertOneToCollection() {
         //Creating instances of SMashers with same default rating
-        Smasher<String> smasherWinner = new Smasher<>(firstPlayer);
+        Smasher<String> smasherWinner = new Smasher<>(firstPlayerId);
 
-        smasherWinner.setMeanDeviationAndDeviationMultiplier(44, 3, 3);
+        smasherWinner.setMeanDeviationAndDeviationMultiplier(5, 3, 3);
         smasherWinner.setPlayerTag("Vdawg");
         smasherWinner.setEntrantId("111331");
 
-        Document doc = new Document("id",smasherWinner.getId())
+        Document doc = new Document("_id",smasherWinner.getId())
             .append("mean", smasherWinner.getMean())
             .append("deviation", smasherWinner.getDeviation())
             .append("deviationMultiplier", smasherWinner.getConservativeStandardDeviationMultiplier())
             .append("playertag",smasherWinner.getPlayerTag());
 
         collection.insertOne(doc);
+
+        collection.createIndex(Indexes.ascending("mean"));
+        collection.createIndex(Indexes.text("playertag"));
+
     }
 
     private void insertSeveralToCollection() {
+        String secondPlayer = "22";
         Smasher<String> smasherWinner = new Smasher<>(secondPlayer);
-
-        smasherWinner.setMeanDeviationAndDeviationMultiplier(33, 5.0, 3.1);
+        smasherWinner.setMeanDeviationAndDeviationMultiplier(1.0, 5.0, 3.1);
 
         smasherWinner.setPlayerTag("Sverre");
 
-        Document doc = new Document("id",smasherWinner.getId())
+        Document doc = new Document("_id",smasherWinner.getId())
             .append("mean", smasherWinner.getMean())
             .append("deviation", smasherWinner.getDeviation())
             .append("deviationMultiplier", smasherWinner.getConservativeStandardDeviationMultiplier())
             .append("playertag",smasherWinner.getPlayerTag());
 
+        String thirdPlayer = "33";
         Smasher<String> smasherLoser = new Smasher<>(thirdPlayer);
-        smasherLoser.setMeanDeviationAndDeviationMultiplier(5, 10, 2);
+        smasherLoser.setMeanDeviationAndDeviationMultiplier(2.0, 10, 2);
 
         smasherLoser.setPlayerTag("AskeLink");
 
-        Document doc2 = new Document("id",smasherLoser.getId())
+        Document doc2 = new Document("_id",smasherLoser.getId())
             .append("mean", smasherLoser.getMean())
             .append("deviation", smasherLoser.getDeviation())
             .append("deviationMultiplier", smasherLoser.getConservativeStandardDeviationMultiplier())
             .append("playertag",smasherLoser.getPlayerTag());
-
-        smasherLoser.setPlayerTag("AskeLink");
 
         List<Document> documents = new ArrayList<>();
         documents.add(doc);
@@ -113,7 +118,7 @@ public class TestSmashersDataobjects {
 
     @Test
     public void getSingleDocumentThatMatchesFilter(){
-        Document myDoc = collection.find(eq("id", firstPlayer)).first();
+        Document myDoc = collection.find(eq("id", firstPlayerId)).first();
     }
 
     @Test
@@ -127,37 +132,65 @@ public class TestSmashersDataobjects {
             String id = String.valueOf(i+222);
             smashers.add(new Smasher<>(name,id));
         }
+    }
 
-        //TODO
+    @Test
+    public void sortCollectionByMean() {
 
-        //Create smasher and see if it gets created if already exists
+        collection.createIndex(Indexes.descending("mean"));
+
+        findAllDocumentsInCollection();
+
+        collection.find()
+            .sort(Sorts.ascending("mean"))
+            .forEach(printBlock);
 
 
-        //Create database scheme like this:
-//        id:
-//        2232,
-//            mean:232,
-//            deviation:232,
-//            "tournaments" : [
-//        {
-//            "tournament-id":"house-of-smash-43", "entrant-id":"98943"
-//        },
-//        {
-//            "tournament-id":"drommelan-23", "entrant-id":"4343"
-//        }
-//        ],
+
+
     }
 
     @Test
     public void updateOneValueInCollection() {
+        dropDatabase();
+        // insertOneToCollection();
+        BasicDBObject searchQuery = new BasicDBObject("_id", firstPlayerId);
+        insertOneToCollection();
 
-        System.out.println("skriver ut eksisterende collections: ");
-        findAllDocumentsInCollection();
-        //inserting 3 players
-        BasicDBObject searchQuery = new BasicDBObject("id", firstPlayer);
+        Document myDoc = collection.find(eq("_id", firstPlayerId)).first();
+        System.out.println(myDoc.get("mean"));
 
-        System.out.println("Fant search query for spiller" + searchQuery);
 
+//        System.out.println("Skriver ut alle etter å ha inserta en i collection: ");
+//        findAllDocumentsInCollection();
+//
+//        BasicDBObject updateFields = new BasicDBObject();
+//
+//        updateFields.append("playertag", "Jonas");
+//        updateFields.append("mean",5.0);
+//        updateFields.append("deviation", 11);
+//
+//        BasicDBObject setQuery = new BasicDBObject();
+//        setQuery.append("$set", updateFields);
+//        collection.updateOne(searchQuery, setQuery);
+//
+//        System.out.println("Skriver ut alle etter å ha oppdatert collection med nytt tag-name");
+//        findAllDocumentsInCollection();
+    }
+
+    @Test
+    public void updateWhenAlreadyExists() throws InterruptedException {
+
+        System.out.println("Wiper eksisterende kolleksjoner først og prøver å skrive ut ");
+        database.drop();
+
+//
+//        UpdateOptions options = new UpdateOptions();
+//        options.upsert(true);
+
+        BasicDBObject searchQuery = new BasicDBObject("_id", firstPlayerId);
+
+       // insertOneToCollection();
         BasicDBObject updateFields = new BasicDBObject();
 
         updateFields.append("playertag", "Jonas");
@@ -166,44 +199,20 @@ public class TestSmashersDataobjects {
 
         BasicDBObject setQuery = new BasicDBObject();
         setQuery.append("$set", updateFields);
-        collection.updateOne(searchQuery, setQuery);
+        collection.updateOne(searchQuery, setQuery,new UpdateOptions().upsert(true));
 
-        Document myDoc = collection.find(eq("playertag", "Jonas")).first();
-        System.out.println(myDoc.toJson());
 
-        System.out.println("Skriver ut alle etter å ha oppdatert jonas");
         findAllDocumentsInCollection();
+
     }
 
-    @Test @Ignore //TODO: Fix
-    public void updateCollectionForIdThatAlreadyExists(){
 
-        System.out.println("Skriver ut de som er oppdatert først ");
-        findAllDocumentsInCollection();
-
-        Smasher<String> smasherLoser = new Smasher<>(thirdPlayer);
-        smasherLoser.setMeanDeviationAndDeviationMultiplier(5, 10, 2);
-
-        smasherLoser.setPlayerTag("AskeLink");
-
-        Document doc2 = new Document("id",smasherLoser.getId())
-            .append("mean", smasherLoser.getMean())
-            .append("deviation", smasherLoser.getDeviation())
-            .append("deviationMultiplier", smasherLoser.getConservativeStandardDeviationMultiplier())
-            .append("playertag",smasherLoser.getPlayerTag());
-
-       // collection.updateOne(doc2);
-
-
-        System.out.println("skriver ut alle etter forsøk på å oppdatere ting som ikke skal legges til: Deebug");
-        findAllDocumentsInCollection();
-    }
 
     @Test
     public void updateWhenNothingExists() throws Exception {
         database.drop();
 
-
+        insertOneToCollection();
 
 
 
