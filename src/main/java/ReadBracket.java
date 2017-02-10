@@ -14,7 +14,6 @@ import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Sorts;
@@ -36,33 +35,32 @@ public class ReadBracket {
     private TrueSkillImplementation trueskill = new TrueSkillImplementation();
 
     private MongoCollection<Document> collection;
-    private MongoDatabase database;
 
     //For printing out sorted DB
-    Block<Document> printBlock = document -> System.out.println(document.toJson());
-
-
-
+    private Block<Document> printBlock = document -> System.out.println(document.toJson());
+    private MongoDatabase database;
 
     public static void main(String[] args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
         readbracket.setupMongoDb();
 
+        //readbracket.dropDb();
+
         long startTime = System.currentTimeMillis();
         //figure out contestants for tournament
         //Returns each phase group id for each bracket played for event
-        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-38", "melee-singles");
+        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-37", "melee-singles");
         readbracket.getAllPlayedSetsForTournament(phasegroupids);
         readbracket.createSmasherObjectsForEntrants(phasegroupids);
 
         //Update smashers (list) with mean, deviation etc from db if exists
         readbracket.updateSmasherObjectsWithMeanFromDb();
 
-        //Update each players' rank for each match
+        //Update each players' rank for each match to each Smasher-object
         readbracket.updateSmashersRanksForEachRound();
-        readbracket.updateSmasherRanksInDatabase();
 
-        //readbracket.sortSmashersByRank();
+        //Update each database instance of smasher with ranks updated for Smasher's objects
+        readbracket.updateSmasherRanksInDatabase();
 
         long endTime = System.currentTimeMillis();
         System.out.println("Starttime minus endtime: " +(endTime-startTime));
@@ -71,7 +69,13 @@ public class ReadBracket {
 
     }
 
+    private void dropDb() {
+        database.drop();
+    }
+
     private void sortSmashersByRankDatabase() {
+        System.out.println("Outputting db ranks: ");
+
         collection.createIndex(Indexes.ascending("mean"));
 
         collection.find()
@@ -81,19 +85,24 @@ public class ReadBracket {
 
     private void updateSmasherObjectsWithMeanFromDb() {
 
-        for(Smasher smasher : smashers){
+        for (Smasher smasher : smashers) {
             Document myDoc = collection.find(eq("_id", smasher.getId())).first();
             double mean = 0;
             double deviation = 0;
             double conservativestandarddeviationmultiplier = 0;
-            try {
-                mean = (double) myDoc.get("mean");
-                deviation = (double) myDoc.get("deviation");
-                conservativestandarddeviationmultiplier = (double) myDoc.get("conservativestandarddeviationmultiplier");
-            } catch (Exception e) {
-                e.printStackTrace();
+
+            if (!(myDoc == null)) {
+                try {
+                    mean = (double) myDoc.get("mean");
+                    deviation = (double) myDoc.get("deviation");
+                    conservativestandarddeviationmultiplier =
+                        (double) myDoc.get("conservativestandarddeviationmultiplier");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                smasher
+                    .setMeanDeviationAndDeviationMultiplier(mean, deviation, conservativestandarddeviationmultiplier);
             }
-            smasher.setMeanDeviationAndDeviationMultiplier(mean, deviation,conservativestandarddeviationmultiplier);
         }
     }
 
@@ -104,27 +113,31 @@ public class ReadBracket {
 
         //TODO: make database field values FiNAL so they cant get wrong
 
+
+
         for (Smasher smasher : smashers) {
+            // if playertag exists
             searchQuery = new BasicDBObject("_id", smasher.getId());
             updateFields = new BasicDBObject();
             updateFields.append("mean", smasher.getMean());
             updateFields.append("deviation", smasher.getDeviation());
             updateFields.append("conservativestandarddeviationmultiplier",
                 smasher.getConservativeStandardDeviationMultiplier());
+            updateFields.append("playertag",smasher.getPlayerTag());
             BasicDBObject setQuery = new BasicDBObject();
             setQuery.append("$set", updateFields);
             collection.updateOne(searchQuery, setQuery, new UpdateOptions().upsert(true));
         }
     }
 
-    private void findAllDocumentsInCollection(){
-        System.out.println("Outputting all documents created so far in db");
-        try (MongoCursor<Document> cursor = database.getCollection("Smashers").find().iterator()) {
-            while (cursor.hasNext()) {
-                System.out.println(cursor.next().toJson());
-            }
-        }
-    }
+//    private void findAllDocumentsInCollection(){
+//        System.out.println("Outputting all documents created so far in db");
+//        try (MongoCursor<Document> cursor = database.getCollection("Smashers").find().iterator()) {
+//            while (cursor.hasNext()) {
+//                System.out.println(cursor.next().toJson());
+//            }
+//        }
+//    }
 
     private void setupMongoDb(){
         MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
@@ -137,27 +150,10 @@ public class ReadBracket {
     private void createInstanceOfSmashersBeforeGeneratingNewRanks(String entrantId, String playerId, String playerTag) {
         if (!smashers.contains(playerId)) {
             Smasher<String> smasher = new Smasher<>(playerId, entrantId);
-            BasicDBObject searchQuery = new BasicDBObject("_id", smasher.getId());
-            BasicDBObject updateFields = new BasicDBObject();
-
-            updateFields.append("playertag", playerTag);
-            updateFields.append("entrantid", entrantId);
-
-            if(searchQuery.containsField("mean")){
-                //update Smasher object with values from DB
-                double mean = (double) searchQuery.get("mean");
-                double deviation = (double) searchQuery.get("deviation");
-                double conservativeStandardDeviationMultiplier = (double) searchQuery.get("conservativeStandardDeviationMultiplier");
-                smasher.setMeanDeviationAndDeviationMultiplier(mean,deviation,conservativeStandardDeviationMultiplier);
-            }
-
-            BasicDBObject setQuery = new BasicDBObject();
-            setQuery.append("$set", updateFields);
-            collection.updateOne(searchQuery, setQuery, new UpdateOptions().upsert(true));
-
             smasher.setPlayerTag(playerTag);
-            //Unless it already exists in database
-           // smasher.setDefaultRating();
+            //Unless rank exists in db
+            smasher.setDefaultRating();
+
             smashers.add(smasher);
         }
     }
@@ -284,8 +280,6 @@ public class ReadBracket {
         winnerAndLoserIdsForEverSetPlayedAtAtournament = new ArrayList<>();
 
         for (String id : phaseGroupIds) {
-
-            //Consider expanding on entrants here to save 50% of api requests used
             String phaseGroupApiEndpoint = "/phase_group/" + id + "?expand[]=sets";
 
             try {
@@ -327,9 +321,17 @@ public class ReadBracket {
             }
 
             for (int i = 0; i < playerNames.length(); i += 1) {
-                String entrantId = playerNames.getJSONObject(i).get("entrantId").toString();
-                String playerId = playerNames.getJSONObject(i).get("id").toString();
-                String playerTag = playerNames.getJSONObject(i).get("gamerTag").toString();
+                String entrantId = null;
+                String playerId = null;
+                String playerTag = null;
+                try {
+                    entrantId = playerNames.getJSONObject(i).get("entrantId").toString();
+                    playerId = playerNames.getJSONObject(i).get("id").toString();
+                    playerTag = playerNames.getJSONObject(i).get("gamerTag").toString();
+                } catch (JSONException e) {
+                    System.out.println("Had issues fetching either entrantid, playerid or playertag from json");
+                    e.printStackTrace();
+                }
 
                 if (!playerIdsMappedToEntrantIds.containsKey(playerId)) {
                     if (!smashers.contains(entrantId)) {

@@ -146,8 +146,6 @@ public class TestSmashersDataobjects {
             .forEach(printBlock);
 
 
-
-
     }
 
     @Test
@@ -203,14 +201,12 @@ public class TestSmashersDataobjects {
 
 
         findAllDocumentsInCollection();
-
     }
 
 
 
     @Test
     public void updateObjectWhenDuplicateId() throws Exception {
-        insertOneToCollection();
 
         database.drop();
 
@@ -231,33 +227,35 @@ public class TestSmashersDataobjects {
 
 
         String idTwo = "02";
-        Smasher<String> newPLayer = new Smasher<>(idTwo);
+        Smasher<String> duplicatePlayer = new Smasher<>(idTwo);
 
-        newPLayer.setMeanDeviationAndDeviationMultiplier(5, 3, 3);
-        newPLayer.setPlayerTag("Vdawg");
-        newPLayer.setEntrantId("111331");
+        duplicatePlayer.setMeanDeviationAndDeviationMultiplier(15, 6, 6);
+        duplicatePlayer.setPlayerTag("Vdawg");
+        duplicatePlayer.setEntrantId("11113322");
 
         Document doc2 = new Document("_id",smasherWinner.getId())
-            .append("mean", smasherWinner.getMean())
-            .append("deviation", smasherWinner.getDeviation())
-            .append("deviationMultiplier", smasherWinner.getConservativeStandardDeviationMultiplier())
-            .append("playertag",smasherWinner.getPlayerTag());
+            .append("mean", duplicatePlayer.getMean())
+            .append("deviation", duplicatePlayer.getDeviation())
+            .append("deviationMultiplier", duplicatePlayer.getConservativeStandardDeviationMultiplier())
+            .append("playertag",duplicatePlayer.getPlayerTag());
 
 
         // search for duplicates
-        Document documentPossiblyExist = collection.find(eq("playertag", smasherWinner.getPlayerTag())).first();
-        String playerTagExistingPlayer = (String) documentPossiblyExist.get("playertag");
-
-        System.out.println(newPLayer.getPlayerTag());
-
-        //TODO Create logic to handle duplicate tags
-
-        if (newPLayer.getPlayerTag().equals(playerTagExistingPlayer)){
-            System.out.println("Found duplicate values, now overwrite last smasher for new collection ");
-
+        Document documentPossiblyExist = collection.find(eq("playertag", "asdasdasd")).first();
+        if (documentPossiblyExist != null){
+            System.out.println("do something");
         }
+
+//
+//        if (!documentPossiblyExist.isEmpty()){
+//            System.out.println("doc is not empty ");
+//        }
+
+        //update player Two with values from duplicate and write notice to console or logfile with what u just did
+
 
 
     }
+
 }
 

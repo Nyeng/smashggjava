@@ -15,9 +15,6 @@ Ideas:
 ## TODOs ##
 - [x] Iterate Smash.gg's bracket API
 - [x] Find a rank api to use as baseline for ranking players (JSkills)
-- [X] ~~Implement comparator for List of Smashers: http://stackoverflow.com/questions/5805602/how-to-sort-list-of-objects-by-some-property~~
-  - [X] Use Java 8 Streams instead
-  - [ ] Frontend will handle sorting functionality, figure out which queries backend handles
 - [ ] Store player data to MongoDB: started, not done prototyping
 - [ ] Iterate Challonge's bracket API
 - [ ] Provide an API service (Jersey?)
@@ -40,6 +37,7 @@ Once decided upon, they will  be be added in the todo-list.
 - For web: http://nikgrozev.com/2014/10/16/rest-with-embedded-jetty-and-jersey-in-a-single-jar-step-by-step/
 - Java implementation of True Skill: https://github.com/nsp/JSkills
 - Consider using http://vuejs.org/ for frontend implementation?
+- http://mongodb.github.io/mongo-java-driver/3.4/driver/getting-started/quick-start/
 
 **Known weaknesses**
 - Gameinfo is never updatead when updating new ranks. Algorithm / player ranks are still updated according to this site: http://boson.research.microsoft.com/trueskill/rankcalculator.aspx
