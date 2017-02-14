@@ -49,7 +49,7 @@ public class ReadBracket {
         long startTime = System.currentTimeMillis();
         //figure out contestants for tournament
         //Returns each phase group id for each bracket played for event
-        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-37", "melee-singles");
+        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-38", "melee-singles");
         readbracket.getAllPlayedSetsForTournament(phasegroupids);
         readbracket.createSmasherObjectsForEntrants(phasegroupids);
 

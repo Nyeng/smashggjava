@@ -18,6 +18,8 @@ Ideas:
 - [ ] Store player data to MongoDB: started, not done prototyping
 - [ ] Iterate Challonge's bracket API
 - [ ] Provide an API service (Jersey?)
+- [ ] When inserting to Database, do this:
+  collection.insert(SmasherAdaptor.toDBObject(Smasher));
 
 
 ## Ideas ##
