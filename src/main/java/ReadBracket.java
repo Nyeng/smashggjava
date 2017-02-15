@@ -44,12 +44,14 @@ public class ReadBracket {
         ReadBracket readbracket = new ReadBracket();
         readbracket.setupMongoDb();
 
-        //readbracket.dropDb();
+        readbracket.sortSmashersByRankDatabase();
+
+        // readbracket.dropDb();
 
         long startTime = System.currentTimeMillis();
         //figure out contestants for tournament
         //Returns each phase group id for each bracket played for event
-        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-38", "melee-singles");
+        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-31", "melee-singles");
         readbracket.getAllPlayedSetsForTournament(phasegroupids);
         readbracket.createSmasherObjectsForEntrants(phasegroupids);
 
@@ -110,10 +112,7 @@ public class ReadBracket {
         //for each smasher create new documents which ull insert using insert aLl in mongodb
         BasicDBObject searchQuery;
         BasicDBObject updateFields;
-
         //TODO: make database field values FiNAL so they cant get wrong
-
-
 
         for (Smasher smasher : smashers) {
             // if playertag exists
@@ -153,7 +152,6 @@ public class ReadBracket {
             smasher.setPlayerTag(playerTag);
             //Unless rank exists in db
             smasher.setDefaultRating();
-
             smashers.add(smasher);
         }
     }
