@@ -1,4 +1,4 @@
-# Norwwegian Smash Ranking API #
+# Norwegian Smash Ranking API #
 
 This is mostly a sample project for learning purposes
 
