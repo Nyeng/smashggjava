@@ -23,7 +23,6 @@ public class Main {
     private MongoDatabase database;
 
 
-
     public static void main(String[]args){
 
         // api.setupMongoDb();
@@ -36,7 +35,10 @@ public class Main {
 
         //get("/rank", (req, res) -> rankedsmasherunsorted);
 
-        get("/helloworld", (req, res) -> "helo");
+        port(getHerokuAssignedPort());
+
+        get("/", (req, res) -> "Melee rank incoming");
+        get("/hello", (req, res) -> "Hello Heroku World");
 
     }
 
