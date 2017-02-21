@@ -24,6 +24,7 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
   <dependencies>
@@ -40,18 +41,6 @@
       <version>4.5.2</version>
     </dependency>
 
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>fluent-hc</artifactId>
-      <version>4.5.2</version>
-    </dependency>
-
-    <!--<dependency>-->
-      <!--<groupId>com.fasterxml.jackson.core</groupId>-->
-      <!--<artifactId>jackson-databind</artifactId>-->
-      <!--<version>2.8.1</version>-->
-    <!--</dependency>-->
     <dependency>
       <groupId>by.stub</groupId>
       <artifactId>stubby4j</artifactId>
@@ -66,23 +55,10 @@
       <systemPath>${project.basedir}/jskills-0.9.1-SNAPSHOT.jar</systemPath>
     </dependency>
 
-     <!-- Consider using this one in the future since it's more recent + using Scala -->
-    <!--<dependency>-->
-      <!--<groupId>info.daviot</groupId>-->
-      <!--<artifactId>TrueSkill</artifactId>-->
-      <!--<version>LATEST</version>-->
-    <!--</dependency>-->
-
     <dependency>
       <groupId>com.sparkjava</groupId>
       <artifactId>spark-core</artifactId>
       <version>2.5.5</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mongojack</groupId>
-      <artifactId>mongojack</artifactId>
-      <version>2.6.1</version>
     </dependency>
 
     <dependency>
