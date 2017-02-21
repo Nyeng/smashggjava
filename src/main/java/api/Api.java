@@ -25,7 +25,6 @@ public class Api {
     private MongoDatabase database;
 
 
-
     public static void main(String[]args){
 
         Api api = new Api();
