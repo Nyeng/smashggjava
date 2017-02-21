@@ -3,7 +3,6 @@ package api;
 import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.port;
-import static spark.route.HttpMethod.post;
 
 import org.bson.Document;
 
@@ -38,7 +37,7 @@ public class Api {
         String rankedsmasherunsorted = api.sortSmashersByRankDatabase();
 
         get("/rank", (req, res) -> rankedsmasherunsorted);
-        post("/submittournament", (req,res ) -> ("");
+       // post("/submittournament", (req,res ) -> ("");
 
         get("/helloworld", (req, res) -> "helo");
 
