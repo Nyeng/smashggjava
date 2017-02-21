@@ -1,5 +1,3 @@
-package api;
-
 import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.port;
@@ -16,7 +14,7 @@ import com.mongodb.util.JSON;
 /**
  * Created by k79689 on 14.02.17.
  */
-public class Api {
+public class Main {
 
     private MongoCollection<Document> collection;
 
@@ -25,10 +23,10 @@ public class Api {
     private MongoDatabase database;
 
 
+
     public static void main(String[]args){
 
-        Api api = new Api();
-       // api.setupMongoDb();
+        // api.setupMongoDb();
 
         port(getHerokuAssignedPort());
 
