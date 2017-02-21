@@ -2,7 +2,6 @@ package api;
 
 import static spark.Spark.exception;
 import static spark.Spark.get;
-import static spark.Spark.port;
 
 import org.bson.Document;
 
@@ -32,7 +31,7 @@ public class Api {
         api.setupMongoDb();
 
         exception(Exception.class, (e, req, res) -> e.printStackTrace());
-        port(9999);
+        //port(9999);
 
 //        String rankedsmasherunsorted = api.sortSmashersByRankDatabase();
 
