@@ -1,1 +1,1 @@
-web:    java -cp "target/dependency/*":target/classes HelloWorld
+web:    java -cp "target/dependency/*":target/classes Api

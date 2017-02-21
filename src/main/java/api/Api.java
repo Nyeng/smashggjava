@@ -35,7 +35,6 @@ public class Api {
 
         exception(Exception.class, (e, req, res) -> e.printStackTrace());
         //port(9999);
-
 //        String rankedsmasherunsorted = api.sortSmashersByRankDatabase();
 
         //get("/rank", (req, res) -> rankedsmasherunsorted);
