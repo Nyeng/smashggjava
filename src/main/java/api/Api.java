@@ -3,16 +3,16 @@ package api;
 import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.port;
+import static spark.route.HttpMethod.post;
 
 import org.bson.Document;
 
-import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Indexes;
-import com.mongodb.client.model.Sorts;
+import com.mongodb.util.JSON;
 
 /**
  * Created by k79689 on 14.02.17.
@@ -32,13 +32,14 @@ public class Api {
         Api api = new Api();
         api.setupMongoDb();
 
-
         exception(Exception.class, (e, req, res) -> e.printStackTrace());
         port(9999);
 
-        String lol = api.sortSmashersByRankDatabase();
+        String rankedsmasherunsorted = api.sortSmashersByRankDatabase();
 
-        get("/hello", (req, res) -> lol);
+        get("/rank", (req, res) -> rankedsmasherunsorted);
+        post("/submittournament", (req,res ) -> ("");
+
         get("/helloworld", (req, res) -> "helo");
 
     }
@@ -56,19 +57,11 @@ public class Api {
         System.out.println("Outputting db ranks: ");
         String hei = "";
 
-        Block<Document> printBlock = document -> hei +=(document.toJson());
+        FindIterable<Document> cursor = collection.find();
+        String serialize = JSON.serialize(cursor);
+        System.out.println(serialize);
 
-        for (Block<Document> collection :  database){
-
-        }
-
-
-        collection.createIndex(Indexes.ascending("mean"));
-
-        collection.find()
-            .sort(Sorts.descending("mean"))
-            .forEach(printBlock);
-        return printBlock.toString();
+        return serialize;
     }
 
 }
