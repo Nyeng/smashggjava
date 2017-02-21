@@ -2,6 +2,7 @@ package api;
 
 import static spark.Spark.exception;
 import static spark.Spark.get;
+import static spark.Spark.port;
 
 import org.bson.Document;
 
@@ -30,6 +31,8 @@ public class Api {
         Api api = new Api();
        // api.setupMongoDb();
 
+        port(getHerokuAssignedPort());
+
         exception(Exception.class, (e, req, res) -> e.printStackTrace());
         //port(9999);
 
@@ -39,6 +42,14 @@ public class Api {
 
         get("/helloworld", (req, res) -> "helo");
 
+    }
+
+    private static int getHerokuAssignedPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
     }
 
     private void setupMongoDb() {
