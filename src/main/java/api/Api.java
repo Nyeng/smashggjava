@@ -28,7 +28,7 @@ public class Api {
     public static void main(String[]args){
 
         Api api = new Api();
-        api.setupMongoDb();
+       // api.setupMongoDb();
 
         exception(Exception.class, (e, req, res) -> e.printStackTrace());
         //port(9999);
