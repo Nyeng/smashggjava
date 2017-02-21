@@ -1,4 +1,4 @@
-# Norwwegian Smash Ranking API #
+# Norwegian Smash Ranking API #
 
 This is mostly a sample project for learning purposes
 
@@ -38,6 +38,7 @@ Once decided upon, they will  be be added in the todo-list.
   * https://api.smash.gg/tournament/house-of-smash-31/event/melee-singles, the rest is taken care of in the application 
 
 **Technicalities**
+- use simple java json objects when generating json output ye? Refactor with Jackson later
 - For web: http://nikgrozev.com/2014/10/16/rest-with-embedded-jetty-and-jersey-in-a-single-jar-step-by-step/
 - Java implementation of True Skill: https://github.com/nsp/JSkills
 - Consider using http://vuejs.org/ for frontend implementation?
