@@ -10,6 +10,11 @@ import jskills.Rating;
  */
 public class Smasher<S> extends Player {
 
+    @Override
+    public S getId() {
+        return id;
+    }
+
     private S id;
     private double mean = 0.0;
     private double conservativeStandardDeviationMultiplier = 0.0;
