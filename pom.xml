@@ -11,9 +11,35 @@
     <plugins>
 
       <plugin>
+        <!-- Build an executable JAR -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+              <mainClass>Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+
+      <plugin>
         <groupId>com.heroku.sdk</groupId>
         <artifactId>heroku-maven-plugin</artifactId>
-        <version>1.1.3</version>
+        <version>0.4.4</version>
+        <configuration>
+          <jdkVersion>1.8</jdkVersion>
+          <!-- Use your own application name -->
+          <appName>meleenorway</appName>
+          <processTypes>
+            <!-- Tell Heroku how to launch your application -->
+            <web>java -jar ./target/jsonparser-1.0-SNAPSHOT-jar-with-dependencies.jar</web>
+          </processTypes>
+        </configuration>
       </plugin>
 
       <plugin>
@@ -24,6 +50,30 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptorRefs>
+            <!-- This tells Maven to include all dependencies -->
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
   <dependencies>
@@ -40,18 +90,6 @@
       <version>4.5.2</version>
     </dependency>
 
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>fluent-hc</artifactId>
-      <version>4.5.2</version>
-    </dependency>
-
-    <!--<dependency>-->
-      <!--<groupId>com.fasterxml.jackson.core</groupId>-->
-      <!--<artifactId>jackson-databind</artifactId>-->
-      <!--<version>2.8.1</version>-->
-    <!--</dependency>-->
     <dependency>
       <groupId>by.stub</groupId>
       <artifactId>stubby4j</artifactId>
@@ -66,13 +104,11 @@
       <systemPath>${project.basedir}/jskills-0.9.1-SNAPSHOT.jar</systemPath>
     </dependency>
 
-     <!-- Consider using this one in the future since it's more recent + using Scala -->
-    <!--<dependency>-->
-      <!--<groupId>info.daviot</groupId>-->
-      <!--<artifactId>TrueSkill</artifactId>-->
-      <!--<version>LATEST</version>-->
-    <!--</dependency>-->
-
+    <dependency>
+      <groupId>com.sparkjava</groupId>
+      <artifactId>spark-core</artifactId>
+      <version>2.5</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

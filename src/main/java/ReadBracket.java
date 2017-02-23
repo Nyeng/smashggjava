@@ -1,5 +1,7 @@
 import static com.mongodb.client.model.Filters.eq;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,11 +15,13 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.util.JSON;
 
 import RankSample.Smasher;
 import RankSample.TrueSkillImplementation;
@@ -44,28 +48,70 @@ public class ReadBracket {
         ReadBracket readbracket = new ReadBracket();
         readbracket.setupMongoDb();
 
-        //readbracket.dropDb();
+       // readbracket.sortSmashersByRankDatabase();
+        // readbracket.dropDb();
 
-        long startTime = System.currentTimeMillis();
+//        //figure out contestants for tournament
+//        //Returns each phase group id for each bracket played for event
+//        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-34", "melee-singles");
+//        readbracket.getAllPlayedSetsForTournament(phasegroupids);
+//        readbracket.createSmasherObjectsForEntrants(phasegroupids);
+//
+//        //Update smashers (list) with mean, deviation etc from db if exists
+//        readbracket.updateSmasherObjectsWithMeanFromDb();
+//
+//        //Update each players' rank for each match to each Smasher-object
+//        readbracket.updateSmashersRanksForEachRound();
+//
+//        //Update each database instance of smasher with ranks updated for Smasher's objects
+//        readbracket.updateSmasherRanksInDatabase();
+//
+//
+//        readbracket.sortSmashersByRankDatabase();
+        readbracket.generateRank("house-of-smash-34");
+
+    }
+
+
+    public String sortSmashers() throws FileNotFoundException {
+
+        System.out.println("Outputting db ranks: ");
+        String hei = "";
+
+        FindIterable<Document> cursor = collection.find();
+        String serialize = JSON.serialize(cursor);
+        System.out.println(serialize);
+
+        try(  PrintWriter out = new PrintWriter( "smashers.json" )  ){
+            out.println( serialize );
+        }
+
+        return serialize;
+    }
+
+
+    public void generateRank(String eventName) throws Exception {
+        //sortSmashersByRankDatabase();
+        setupMongoDb();
+
         //figure out contestants for tournament
         //Returns each phase group id for each bracket played for event
-        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-38", "melee-singles");
-        readbracket.getAllPlayedSetsForTournament(phasegroupids);
-        readbracket.createSmasherObjectsForEntrants(phasegroupids);
+        List<String> phasegroupids = returnPhaseGroupIds(eventName, "melee-singles");
+        getAllPlayedSetsForTournament(phasegroupids);
+        createSmasherObjectsForEntrants(phasegroupids);
 
         //Update smashers (list) with mean, deviation etc from db if exists
-        readbracket.updateSmasherObjectsWithMeanFromDb();
+        updateSmasherObjectsWithMeanFromDb();
 
         //Update each players' rank for each match to each Smasher-object
-        readbracket.updateSmashersRanksForEachRound();
+        System.out.println("updateing for each round");
+        updateSmashersRanksForEachRound();
 
+        System.out.println("updating in db: (tryuing)");
         //Update each database instance of smasher with ranks updated for Smasher's objects
-        readbracket.updateSmasherRanksInDatabase();
+        updateSmasherRanksInDatabase();
 
-        long endTime = System.currentTimeMillis();
-        System.out.println("Starttime minus endtime: " +(endTime-startTime));
-
-        readbracket.sortSmashersByRankDatabase();
+        sortSmashersByRankDatabase();
 
     }
 
@@ -73,7 +119,7 @@ public class ReadBracket {
         database.drop();
     }
 
-    private void sortSmashersByRankDatabase() {
+    public void sortSmashersByRankDatabase() {
         System.out.println("Outputting db ranks: ");
 
         collection.createIndex(Indexes.ascending("mean"));
@@ -81,9 +127,11 @@ public class ReadBracket {
         collection.find()
             .sort(Sorts.descending("mean"))
             .forEach(printBlock);
+
     }
 
-    private void updateSmasherObjectsWithMeanFromDb() {
+    public void updateSmasherObjectsWithMeanFromDb() {
+        System.out.println("trying to update with mean from db");
 
         for (Smasher smasher : smashers) {
             Document myDoc = collection.find(eq("_id", smasher.getId())).first();
@@ -106,14 +154,11 @@ public class ReadBracket {
         }
     }
 
-    private void updateSmasherRanksInDatabase() {
+    public void updateSmasherRanksInDatabase() {
         //for each smasher create new documents which ull insert using insert aLl in mongodb
         BasicDBObject searchQuery;
         BasicDBObject updateFields;
-
         //TODO: make database field values FiNAL so they cant get wrong
-
-
 
         for (Smasher smasher : smashers) {
             // if playertag exists
@@ -139,11 +184,18 @@ public class ReadBracket {
 //        }
 //    }
 
-    private void setupMongoDb(){
+    public void setupMongoDb(){
         MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+        MongoClientURI prodConnectionString = new MongoClientURI("mongodb://heroku_7btb6zs3:Smashnorgeheroku13@ds157839.mlab.com:57839");
+        //String test = new MongoClientURI ("mongodb://heroku_7btb6zs3:Smashnorgeheroku13@ds157839.mlab.com:57839/heroku_7btb6zs3").getDatabase();
+       // MongoClientOptions.Builder builder = MongoClientOptions.builder().connectTimeout(3000);
+       // MongoClient mongo = new MongoClient(new ServerAddress("192.168.0.1", 3000), builder.build());
+
         MongoClient mongoClient = new MongoClient(connectionString);
 
-        database = mongoClient.getDatabase("mydb");
+        database = mongoClient.getDatabase("heroku_7btb6zs3");
+
+        System.out.println("database: "+ database);
         collection = database.getCollection("Smashers");
     }
 
@@ -153,7 +205,6 @@ public class ReadBracket {
             smasher.setPlayerTag(playerTag);
             //Unless rank exists in db
             smasher.setDefaultRating();
-
             smashers.add(smasher);
         }
     }
@@ -218,15 +269,15 @@ public class ReadBracket {
         }
     }
 
-    private void sortSmashersByRank() {
-        // Smashers sorted:
-        smashers
-            .stream()
-            .sorted((e2, e1) -> Double.compare(e1.getMean(),
-                e2.getMean()))
-            //.count();
-            .forEach(System.out::println);
-    }
+//    private void sortSmashersByRank() {
+//        // Smashers sorted:
+//        smashers
+//            .stream()
+//            .sorted((e2, e1) -> Double.compare(e1.getMean(),
+//                e2.getMean()))
+//            //.count();
+//            .forEach(System.out::println);
+//    }
 
     private void getAllWinnersAndLosersForEachSet(JSONArray sets) throws JSONException {
         //So far only showing how to iterate bracket, not storing the data yet. Need to figure out how to process

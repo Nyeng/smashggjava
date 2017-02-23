@@ -21,7 +21,7 @@ Ideas:
 - [ ] When inserting to Database, do this:
   collection.insert(SmasherAdaptor.toDBObject(Smasher));
 - [ ] Tip: https://github.com/trishagee/mongodb-getting-started/blob/master/src/test/java/com/mechanitis/mongodb/gettingstarted/Exercise3InsertTest.java
-
+- [ ] http://mongojack.org/
 
 
 ## Ideas ##
