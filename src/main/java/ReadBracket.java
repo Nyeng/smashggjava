@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -48,7 +49,7 @@ public class ReadBracket {
         ReadBracket readbracket = new ReadBracket();
         readbracket.setupMongoDb();
 
-       // readbracket.sortSmashersByRankDatabase();
+        // readbracket.sortSmashersByRankDatabase();
         // readbracket.dropDb();
 
 //        //figure out contestants for tournament
@@ -72,7 +73,6 @@ public class ReadBracket {
 
     }
 
-
     public String sortSmashers() throws FileNotFoundException {
 
         System.out.println("Outputting db ranks: ");
@@ -81,17 +81,16 @@ public class ReadBracket {
         String serialize = JSON.serialize(cursor);
         System.out.println(serialize);
 
-        try(  PrintWriter out = new PrintWriter( "smashers.json" )  ){
-            out.println( serialize );
+        try (PrintWriter out = new PrintWriter("smashers.json")) {
+            out.println(serialize);
         }
 
         return serialize;
     }
 
-
     public void generateRank(String eventName) throws Exception {
         //sortSmashersByRankDatabase();
-      //  setupMongoDb();
+        //  setupMongoDb();
 
         //figure out contestants for tournament
         //Returns each phase group id for each bracket played for event
@@ -167,7 +166,7 @@ public class ReadBracket {
             updateFields.append("deviation", smasher.getDeviation());
             updateFields.append("conservativestandarddeviationmultiplier",
                 smasher.getConservativeStandardDeviationMultiplier());
-            updateFields.append("playertag",smasher.getPlayerTag());
+            updateFields.append("playertag", smasher.getPlayerTag());
             BasicDBObject setQuery = new BasicDBObject();
             setQuery.append("$set", updateFields);
             collection.updateOne(searchQuery, setQuery, new UpdateOptions().upsert(true));
@@ -183,18 +182,62 @@ public class ReadBracket {
 //        }
 //    }
 
-    public void setupMongoDb(){
-        MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
-        MongoClientURI prodConnectionString = new MongoClientURI("mongodb://heroku_7btb6zs3:Smashnorgeheroku13@ds157839.mlab.com:57839");
-        //String test = new MongoClientURI ("mongodb://heroku_7btb6zs3:Smashnorgeheroku13@ds157839.mlab.com:57839/heroku_7btb6zs3").getDatabase();
-       // MongoClientOptions.Builder builder = MongoClientOptions.builder().connectTimeout(3000);
-       // MongoClient mongo = new MongoClient(new ServerAddress("192.168.0.1", 3000), builder.build());
 
+    public void mongosetup2(){
+
+        String mongoClientURI = "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab"
+            + ".com:57839/heroku_7btb6zs3";
+
+        String uri2 = "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3";
+
+
+        MongoClientURI connectionString = new MongoClientURI(uri2); // enable SSL connection
+        MongoClientOptions.builder().sslEnabled(true).build();
         MongoClient mongoClient = new MongoClient(connectionString);
+        MongoClientOptions.builder().sslEnabled(true).build();
 
         database = mongoClient.getDatabase("heroku_7btb6zs3");
 
-        System.out.println("database: "+ database);
+        try {
+            mongoClient.getAddress();
+        } catch (com.mongodb.MongoSocketOpenException e) {
+            System.out.println("Switch to default port");
+    /*…use default port logic…*/
+        }
+
+        System.out.println("database: " + database);
+        System.out.println(database.getWriteConcern());
+        collection = database.getCollection("Smashers");
+
+    }
+
+    public void setupMongoDb() {
+
+        MongoClientOptions.Builder options = MongoClientOptions.builder();
+        options.socketKeepAlive(true);
+
+
+        MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+        MongoClientURI prodConnectionString =
+            new MongoClientURI("mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlabcom:57839/heroku_7btb6zs3");
+
+        MongoClientURI prodTest = new MongoClientURI(
+            "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3");
+
+
+        //String test = new MongoClientURI ("mongodb://heroku_7btb6zs3:Smashnorgeheroku13@ds157839.mlab
+        // .com:57839/heroku_7btb6zs3").getDatabase();
+
+//        mongodb://heroku_7btb6zs3:Smashnorgeheroku13@ds157839.mlab.com:57839/heroku_7btb6zs3
+
+//        mongo ds157839.mlab.com:57839/heroku_7btb6zs3 -u heroku_7btb6zs3  -p bvh12rab31k58n8ijraufist
+
+        MongoClient mongoClient = new MongoClient(prodTest);
+
+        database = mongoClient.getDatabase("heroku_7btb6zs3");
+
+        System.out.println("database: " + database);
+        System.out.println(database.getWriteConcern());
         collection = database.getCollection("Smashers");
     }
 
