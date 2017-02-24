@@ -1,10 +1,9 @@
-package RankSample;
-
-import static RankSample.SmashMatchup.defaultGameInfo;
+package Trueskill;
 
 import java.util.Collection;
 import java.util.Map;
 
+import jskills.GameInfo;
 import jskills.IPlayer;
 import jskills.ITeam;
 import jskills.Rating;
@@ -14,6 +13,8 @@ import jskills.trueskill.TwoPlayerTrueSkillCalculator;
  * Created by k79689 on 25.01.17.
  */
 public class TrueSkillImplementation {
+
+    private GameInfo defaultGameInfo = GameInfo.getDefaultGameInfo();
 
     private TwoPlayerTrueSkillCalculator calculator = new TwoPlayerTrueSkillCalculator();
 

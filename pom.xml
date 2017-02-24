@@ -96,6 +96,8 @@
       <version>3.3.0</version>
     </dependency>
 
+    <!--start using https://github.com/moserware/ instead, it's basicallly jskills with java 8 support -->
+
     <dependency>
       <groupId>jskills</groupId>
       <artifactId>jskills</artifactId>

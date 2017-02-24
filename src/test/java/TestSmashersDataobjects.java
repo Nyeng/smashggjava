@@ -20,7 +20,7 @@ import com.mongodb.client.model.InsertOneOptions;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.UpdateOptions;
 
-import RankSample.Smasher;
+import Trueskill.Smasher;
 
 /**
  * Created by k79689 on 03.02.17.

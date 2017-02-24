@@ -1,8 +1,7 @@
-package RankSample;
+package Trueskill;
 
 import java.util.Collection;
 
-import jskills.GameInfo;
 import jskills.ITeam;
 import jskills.Player;
 import jskills.Rating;
@@ -20,12 +19,6 @@ public class SmashMatchup {
     public SmashMatchup(Player player1, Rating ratingPlayer1, Player player2, Rating ratingPlayer2){
         team1 = new Team(player1, ratingPlayer1);
         team2 = new Team(player2, ratingPlayer2);
-    }
-
-    public static GameInfo defaultGameInfo = GameInfo.getDefaultGameInfo();
-
-    public static GameInfo returnGameinfo(){
-        return defaultGameInfo;
     }
 
     public Collection<ITeam> returnMatchup(){

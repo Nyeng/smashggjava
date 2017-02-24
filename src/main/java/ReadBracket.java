@@ -23,8 +23,8 @@ import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.util.JSON;
 
-import RankSample.Smasher;
-import RankSample.TrueSkillImplementation;
+import Trueskill.Smasher;
+import Trueskill.TrueSkillImplementation;
 
 /**
  * Created by Vdawg on 17.01.17.
@@ -76,7 +76,6 @@ public class ReadBracket {
     public String sortSmashers() throws FileNotFoundException {
 
         System.out.println("Outputting db ranks: ");
-        String hei = "";
 
         FindIterable<Document> cursor = collection.find();
         String serialize = JSON.serialize(cursor);
@@ -92,7 +91,7 @@ public class ReadBracket {
 
     public void generateRank(String eventName) throws Exception {
         //sortSmashersByRankDatabase();
-        setupMongoDb();
+      //  setupMongoDb();
 
         //figure out contestants for tournament
         //Returns each phase group id for each bracket played for event

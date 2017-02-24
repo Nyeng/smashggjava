@@ -3,8 +3,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-import RankSample.Smasher;
-import RankSample.TrueSkillImplementation;
+import Trueskill.Smasher;
+import Trueskill.TrueSkillImplementation;
 
 /**
  * Created by k79689 on 02.02.17.
@@ -19,6 +19,8 @@ public class TestSmasherSkills {
         System.out.println("μ means average skill of player and σσ is a confidence of the guessed rating");
 
     }
+
+    //TODO: Create test for changing conservativeStandardDeviationMultiplier
 
     @Test
     public void measureRanksOnOneWin() {

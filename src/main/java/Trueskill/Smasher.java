@@ -1,4 +1,4 @@
-package RankSample;
+package Trueskill;
 
 
 import jskills.GameInfo;
