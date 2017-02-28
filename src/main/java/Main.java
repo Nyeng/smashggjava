@@ -34,10 +34,9 @@ public class Main {
     private MongoDatabase database;
     public static ReadBracket readBracket = new ReadBracket();
 
+    public static void main(String[] args) throws IOException {
 
-    public static void main(String[]args) throws IOException {
-
-        Main main= new Main();
+        Main main = new Main();
         readBracket.setupMongoDb();
 
         main.getSmashersFromFile();
@@ -53,15 +52,19 @@ public class Main {
         before("/post", (request, response) -> {
             Boolean authenticated = false;
             String auth = request.headers("Authorization");
-            if(auth != null && auth.startsWith("Basic")) {
+            if (auth != null && auth.startsWith("Basic")) {
                 String b64Credentials = auth.substring("Basic".length()).trim();
                 String credentials = new String(Base64.getDecoder().decode(b64Credentials));
                 System.out.println(credentials);
-                if(credentials.equals("admin:admin")) authenticated = true;
+                if (credentials.equals("admin:admin")) {
+                    authenticated = true;
+                }
             }
-            if(!authenticated) {
+            if (!authenticated) {
                 response.header("WWW-Authenticate", "Basic realm=\"Restricted\"");
-                halt(401, "You are not authorized to make this request. Contact Vdogg, and we'll see what we can do about it.");
+                halt(401,
+                    "You are not authorized to make this request. Contact Vdogg, and we'll see what we can do about "
+                        + "it.");
                 response.status(401);
             }
         });
@@ -75,7 +78,7 @@ public class Main {
 
         exception(Exception.class, (e, req, res) -> e.printStackTrace());
         //port(9999);
-       // String rankedsmasherunsorted = main.sortSmashersByRankDatabase();
+        // String rankedsmasherunsorted = main.sortSmashersByRankDatabase();
 
         //get("/rank", (req, res) -> rankedsmasherunsorted);
 
@@ -91,7 +94,6 @@ public class Main {
 
         //Heroku pw: Smashnorgeheroku13
 
-        port(getHerokuAssignedPort());
 
         get("/rank", (req, res) -> main.sortSmashersByRankDatabase());
 
@@ -103,7 +105,7 @@ public class Main {
     public static int getHerokuAssignedPort() {
         ProcessBuilder processBuilder = new ProcessBuilder();
         if (processBuilder.environment().get("PORT") != null) {
-            System.out.println("SPARK PORT: " +Integer.parseInt(processBuilder.environment().get("PORT")));
+            System.out.println("SPARK PORT: " + Integer.parseInt(processBuilder.environment().get("PORT")));
             return Integer.parseInt(processBuilder.environment().get("PORT"));
         }
         return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
@@ -114,7 +116,8 @@ public class Main {
 
         //prod mongodb://<dbuser>:<dbpassword>@ds157839.mlab.com:57839/heroku_7btb6zs3
 
-        String prodConnectionUri = "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3";
+        String prodConnectionUri =
+            "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3";
 
         MongoClient mongoClient = new MongoClient(prodConnectionUri);
 
@@ -142,8 +145,7 @@ public class Main {
 
         String lol = JSON.serialize(everything);
 
-
-       return lol;
+        return lol;
     }
 
     private String sortSmashersByRankDatabase() throws FileNotFoundException {
@@ -154,8 +156,8 @@ public class Main {
         String serialize = JSON.serialize(cursor);
         System.out.println(serialize);
 
-        try(  PrintWriter out = new PrintWriter( "smashers.json" )  ){
-            out.println( serialize );
+        try (PrintWriter out = new PrintWriter("smashers.json")) {
+            out.println(serialize);
         }
 
         return serialize;

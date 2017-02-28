@@ -215,29 +215,15 @@ public class ReadBracket {
 
         MongoClientOptions.Builder options = MongoClientOptions.builder();
         options.socketKeepAlive(true);
+        options.connectTimeout(10000);
+        options.socketTimeout(10000);
 
+        MongoClientURI uri  = new MongoClientURI("mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab"
+            + ".com:57839/heroku_7btb6zs3\n"   ,new MongoClientOptions.Builder(options.build()));
 
-        MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
-        MongoClientURI prodConnectionString =
-            new MongoClientURI("mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlabcom:57839/heroku_7btb6zs3");
-
-        MongoClientURI prodTest = new MongoClientURI(
-            "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3");
-
-
-        //String test = new MongoClientURI ("mongodb://heroku_7btb6zs3:Smashnorgeheroku13@ds157839.mlab
-        // .com:57839/heroku_7btb6zs3").getDatabase();
-
-//        mongodb://heroku_7btb6zs3:Smashnorgeheroku13@ds157839.mlab.com:57839/heroku_7btb6zs3
-
-//        mongo ds157839.mlab.com:57839/heroku_7btb6zs3 -u heroku_7btb6zs3  -p bvh12rab31k58n8ijraufist
-
-        MongoClient mongoClient = new MongoClient(prodTest);
+        MongoClient mongoClient = new MongoClient(uri);
 
         database = mongoClient.getDatabase("heroku_7btb6zs3");
-
-        System.out.println("database: " + database);
-        System.out.println(database.getWriteConcern());
         collection = database.getCollection("Smashers");
     }
 
