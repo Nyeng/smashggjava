@@ -16,6 +16,8 @@ import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -47,30 +49,11 @@ public class ReadBracket {
 
     public static void main(String[] args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
-        readbracket.setupMongoDb();
+//        readbracket.setupMongoDb();
 
-        // readbracket.sortSmashersByRankDatabase();
-        // readbracket.dropDb();
+        readbracket.setupMongoWithAuth();
 
-//        //figure out contestants for tournament
-//        //Returns each phase group id for each bracket played for event
-//        List<String> phasegroupids = readbracket.returnPhaseGroupIds("house-of-smash-34", "melee-singles");
-//        readbracket.getAllPlayedSetsForTournament(phasegroupids);
-//        readbracket.createSmasherObjectsForEntrants(phasegroupids);
-//
-//        //Update smashers (list) with mean, deviation etc from db if exists
-//        readbracket.updateSmasherObjectsWithMeanFromDb();
-//
-//        //Update each players' rank for each match to each Smasher-object
-//        readbracket.updateSmashersRanksForEachRound();
-//
-//        //Update each database instance of smasher with ranks updated for Smasher's objects
-//        readbracket.updateSmasherRanksInDatabase();
-//
-//
-//        readbracket.sortSmashersByRankDatabase();
-        readbracket.generateRank("house-of-smash-34");
-
+//        readbracket.generateRank("house-of-smash-34");
     }
 
     public String sortSmashers() throws FileNotFoundException {
@@ -153,7 +136,7 @@ public class ReadBracket {
     }
 
     public void updateSmasherRanksInDatabase() {
-        //for each smasher create new documents which ull insert using insert aLl in mongodb
+        //for each smasher create new documents which you'll insert using insert aLl in mongodb
         BasicDBObject searchQuery;
         BasicDBObject updateFields;
         //TODO: make database field values FiNAL so they cant get wrong
@@ -182,34 +165,23 @@ public class ReadBracket {
 //        }
 //    }
 
+    public void setupMongoWithAuth(){
 
-    public void mongosetup2(){
+        MongoCredential prodAuth = MongoCredential.createCredential("username","database","asd".toCharArray());
+        MongoCredential testAuth = MongoCredential.createPlainCredential("pankaj", "test", "pankaj123".toCharArray());
 
-        String mongoClientURI = "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab"
-            + ".com:57839/heroku_7btb6zs3";
+        List<MongoCredential> auths = new ArrayList<>();
+        auths.add(prodAuth);
+        auths.add(testAuth);
 
-        String uri2 = "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3";
 
+        ServerAddress serverAddress = new ServerAddress("localhost", 57839);
 
-        MongoClientURI connectionString = new MongoClientURI(uri2); // enable SSL connection
-        MongoClientOptions.builder().sslEnabled(true).build();
-        MongoClient mongoClient = new MongoClient(connectionString);
-        MongoClientOptions.builder().sslEnabled(true).build();
+        MongoClient mongo = new MongoClient(serverAddress, auths);
 
-        database = mongoClient.getDatabase("heroku_7btb6zs3");
-
-        try {
-            mongoClient.getAddress();
-        } catch (com.mongodb.MongoSocketOpenException e) {
-            System.out.println("Switch to default port");
-    /*…use default port logic…*/
-        }
-
-        System.out.println("database: " + database);
-        System.out.println(database.getWriteConcern());
-        collection = database.getCollection("Smashers");
-
+        mongo.listDatabaseNames();
     }
+
 
     public void setupMongoDb() {
 
@@ -218,13 +190,24 @@ public class ReadBracket {
         options.connectTimeout(10000);
         options.socketTimeout(10000);
 
-        MongoClientURI uri  = new MongoClientURI("mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab"
-            + ".com:57839/heroku_7btb6zs3\n"   ,new MongoClientOptions.Builder(options.build()));
+//        http://www.journaldev.com/3963/mongodb-java-crud-example-tutorial
+
+        //pw: herokunorway123
+//        mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3
+
+//        mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3
+
+        MongoClientURI uri = new MongoClientURI(
+            "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3",
+            new MongoClientOptions.Builder(options.build()));
 
         MongoClient mongoClient = new MongoClient(uri);
 
         database = mongoClient.getDatabase("heroku_7btb6zs3");
         collection = database.getCollection("Smashers");
+
+
+
     }
 
     private void createInstanceOfSmashersBeforeGeneratingNewRanks(String entrantId, String playerId, String playerTag) {

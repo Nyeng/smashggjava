@@ -37,10 +37,10 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Main main = new Main();
+
+
         readBracket.setupMongoDb();
-
         main.getSmashersFromFile();
-
         port(getHerokuAssignedPort());
 
         get("/rank", (req, res) -> readBracket.sortSmashers());
@@ -103,6 +103,8 @@ public class Main {
     }
 
     public static int getHerokuAssignedPort() {
+
+
         ProcessBuilder processBuilder = new ProcessBuilder();
         if (processBuilder.environment().get("PORT") != null) {
             System.out.println("SPARK PORT: " + Integer.parseInt(processBuilder.environment().get("PORT")));

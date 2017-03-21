@@ -48,3 +48,5 @@ Once decided upon, they will  be be added in the todo-list.
 - Gameinfo is never updatead when updating new ranks. Algorithm / player ranks are still updated according to this site: http://boson.research.microsoft.com/trueskill/rankcalculator.aspx
 
 
+TODO: Might need to run "heroku ps:scale web=1"
+ after deploying
