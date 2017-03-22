@@ -37,9 +37,15 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Main main = new Main();
+        String localHost = "mongodb://localhost:27017";
+        String prodConnectionUri =
+            "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3";
 
+        String database = "database";
+        String collection = "smashers";
 
-        readBracket.setupMongoDb();
+        readBracket.setupMongoDb(localHost, database, collection);
+
         main.getSmashersFromFile();
         port(getHerokuAssignedPort());
 
@@ -113,15 +119,10 @@ public class Main {
         return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
     }
 
-    private void setupMongoDb() {
-        MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+    private void setupMongoDb(String host) {
+        MongoClientURI uri = new MongoClientURI(host);
+        MongoClient mongoClient = new MongoClient(uri);
 
-        //prod mongodb://<dbuser>:<dbpassword>@ds157839.mlab.com:57839/heroku_7btb6zs3
-
-        String prodConnectionUri =
-            "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3";
-
-        MongoClient mongoClient = new MongoClient(prodConnectionUri);
 
         database = mongoClient.getDatabase("mydb");
         collection = database.getCollection("Smashers");

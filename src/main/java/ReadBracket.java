@@ -183,31 +183,21 @@ public class ReadBracket {
     }
 
 
-    public void setupMongoDb() {
+    public void setupMongoDb(String hostName, String databaseName, String collectionName) {
 
         MongoClientOptions.Builder options = MongoClientOptions.builder();
         options.socketKeepAlive(true);
         options.connectTimeout(10000);
         options.socketTimeout(10000);
 
-//        http://www.journaldev.com/3963/mongodb-java-crud-example-tutorial
-
-        //pw: herokunorway123
-//        mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3
-
-//        mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3
-
         MongoClientURI uri = new MongoClientURI(
-            "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3",
+            hostName,
             new MongoClientOptions.Builder(options.build()));
 
         MongoClient mongoClient = new MongoClient(uri);
 
-        database = mongoClient.getDatabase("heroku_7btb6zs3");
-        collection = database.getCollection("Smashers");
-
-
-
+        database = mongoClient.getDatabase(databaseName);
+        collection = database.getCollection(collectionName);
     }
 
     private void createInstanceOfSmashersBeforeGeneratingNewRanks(String entrantId, String playerId, String playerTag) {

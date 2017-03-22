@@ -26,16 +26,8 @@ public class TestSpark {
 
     public static void main(String[] args) throws FileNotFoundException {
         ReadBracket readBracket = new ReadBracket();
-        readBracket.setupMongoDb();
-
-//        //mongo ds157839.mlab.com:57839/heroku_7btb6zs3 -u heroku_7btb6zs3 -p bvh12rab31k58n8ijraufist0@ds157839
-//
-//       // mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3
-//
-//        /newpw: testpassordheroku1
-        // user mongodb: heroku_7btb6zs3
-
-
+        readBracket.setupMongoDb("mongodb://localhost:27017","testDb","testSmashers");
+        
 //
         get("/rank", (req, res) -> readBracket.sortSmashers());
 //
