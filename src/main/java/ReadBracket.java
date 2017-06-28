@@ -1,7 +1,6 @@
 import static com.mongodb.client.model.Filters.eq;
 
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,9 +36,11 @@ public class ReadBracket {
     private JSONObject jsonobject;
     private List<JSONObject> winnerAndLoserIdsForEverSetPlayedAtAtournament;
     private List<Smasher<String>> smashers;
-
     private ConsumeApi consumeApi = new ConsumeApi();
+
+
     private TrueSkillImplementation trueskill = new TrueSkillImplementation();
+
 
     private MongoCollection<Document> collection;
 
@@ -49,33 +50,19 @@ public class ReadBracket {
 
     public static void main(String[] args) throws Exception {
         ReadBracket readbracket = new ReadBracket();
-//        readbracket.setupMongoDb();
-
         readbracket.setupMongoWithAuth();
 
-//        readbracket.generateRank("house-of-smash-34");
     }
 
     public String sortSmashers() throws FileNotFoundException {
-
         System.out.println("Outputting db ranks: ");
-
         FindIterable<Document> cursor = collection.find();
         String serialize = JSON.serialize(cursor);
         System.out.println(serialize);
-
-        try (PrintWriter out = new PrintWriter("smashers.json")) {
-            out.println(serialize);
-        }
-
         return serialize;
     }
 
     public void generateRank(String eventName) throws Exception {
-        //sortSmashersByRankDatabase();
-        //  setupMongoDb();
-
-        //figure out contestants for tournament
         //Returns each phase group id for each bracket played for event
         List<String> phasegroupids = returnPhaseGroupIds(eventName, "melee-singles");
         getAllPlayedSetsForTournament(phasegroupids);
@@ -113,7 +100,6 @@ public class ReadBracket {
 
     public void updateSmasherObjectsWithMeanFromDb() {
         System.out.println("trying to update with mean from db");
-
         for (Smasher smasher : smashers) {
             Document myDoc = collection.find(eq("_id", smasher.getId())).first();
             double mean = 0;
@@ -156,14 +142,6 @@ public class ReadBracket {
         }
     }
 
-//    private void findAllDocumentsInCollection(){
-//        System.out.println("Outputting all documents created so far in db");
-//        try (MongoCursor<Document> cursor = database.getCollection("Smashers").find().iterator()) {
-//            while (cursor.hasNext()) {
-//                System.out.println(cursor.next().toJson());
-//            }
-//        }
-//    }
 
     public void setupMongoWithAuth(){
 
@@ -171,20 +149,17 @@ public class ReadBracket {
         MongoCredential testAuth = MongoCredential.createPlainCredential("pankaj", "test", "pankaj123".toCharArray());
 
         List<MongoCredential> auths = new ArrayList<>();
+
         auths.add(prodAuth);
         auths.add(testAuth);
 
-
         ServerAddress serverAddress = new ServerAddress("localhost", 57839);
-
         MongoClient mongo = new MongoClient(serverAddress, auths);
-
         mongo.listDatabaseNames();
     }
 
 
     public void setupMongoDb(String hostName, String databaseName, String collectionName) {
-
         MongoClientOptions.Builder options = MongoClientOptions.builder();
         options.socketKeepAlive(true);
         options.connectTimeout(10000);
@@ -242,8 +217,7 @@ public class ReadBracket {
                     e.printStackTrace();
                 }
                 String loserId;
-                String setPlayed =
-                    null;
+                String setPlayed = null;
                 try {
                     setPlayed =
                         (bracketRound.getString("fullRoundText") == null) ? "N/A" : bracketRound.getString
@@ -270,19 +244,7 @@ public class ReadBracket {
         }
     }
 
-//    private void sortSmashersByRank() {
-//        // Smashers sorted:
-//        smashers
-//            .stream()
-//            .sorted((e2, e1) -> Double.compare(e1.getMean(),
-//                e2.getMean()))
-//            //.count();
-//            .forEach(System.out::println);
-//    }
-
     private void getAllWinnersAndLosersForEachSet(JSONArray sets) throws JSONException {
-        //So far only showing how to iterate bracket, not storing the data yet. Need to figure out how to process
-        // results for a rank api to know how to iterate
         for (int i = 0; i < sets.length(); i++) {
             JSONObject setsObjects = sets.getJSONObject(i);
 
@@ -328,7 +290,6 @@ public class ReadBracket {
     }
 
     private void getAllPlayedSetsForTournament(List<String> phaseGroupIds) throws Exception {
-
         winnerAndLoserIdsForEverSetPlayedAtAtournament = new ArrayList<>();
 
         for (String id : phaseGroupIds) {
@@ -339,6 +300,7 @@ public class ReadBracket {
                 jsonobject = new JSONObject(getPhaseGroupJson);
             } catch (Exception e) {
                 e.printStackTrace();
+                System.out.println("couldn't find phase group for phaseGroupApiEndpoint " + phaseGroupApiEndpoint);
             }
 
             try {
@@ -362,6 +324,7 @@ public class ReadBracket {
                 String getPhaseGroupJson = getJsonForRequest(phaseGroupApiEndpoint);
                 jsonobject = new JSONObject(getPhaseGroupJson);
             } catch (Exception e) {
+                System.out.println("wasnt able to get phasegroup json for endpoint " );
                 e.printStackTrace();
             }
 
@@ -369,6 +332,7 @@ public class ReadBracket {
             try {
                 playerNames = jsonobject.getJSONObject("entities").getJSONArray("player");
             } catch (JSONException e) {
+                System.out.println("unable to find jsonobject.getJSONObject, printing jsonobject:: " + jsonobject);
                 e.printStackTrace();
             }
 
@@ -399,4 +363,7 @@ public class ReadBracket {
         return consumeApi.returnJsonForGetRequest(path);
     }
 
+    public void dropDatabase() {
+    database.drop();
+    }
 }

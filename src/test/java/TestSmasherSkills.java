@@ -17,10 +17,7 @@ public class TestSmasherSkills {
     public void setup() {
         trueSkill = new TrueSkillImplementation();
         System.out.println("μ means average skill of player and σσ is a confidence of the guessed rating");
-
     }
-
-    //TODO: Create test for changing conservativeStandardDeviationMultiplier
 
     @Test
     public void measureRanksOnOneWin() {
@@ -29,10 +26,8 @@ public class TestSmasherSkills {
         Smasher<String> smasherLoser = new Smasher<>("Aske", "playerID2");
 
         for (int i = 0; i < 2; i++) {
-            //looping through i wins for one player
             trueSkill.updatePlayerRanks(smasherWinner, smasherLoser);
         }
-
         assertThat("Winner should have higher rank ", smasherWinner.getMean() > smasherLoser.getMean());
     }
 
@@ -47,7 +42,7 @@ public class TestSmasherSkills {
         double deviationMultiplierLoser = 5;
         double deviationLoser = 4;
 
-        Smasher<String> winner = new Smasher<>("Vdawg","playerid2");
+        Smasher winner = new Smasher<>("Vdawg","playerid2");
         winner.setMeanDeviationAndDeviationMultiplier(meanWinner, deviationWinner, DeviationMultiplierWinner);
 
         Smasher<String> loser = new Smasher<>("Zorc","playerid3");

@@ -26,9 +26,8 @@ public class TestSpark {
 
     public static void main(String[] args) throws FileNotFoundException {
         ReadBracket readBracket = new ReadBracket();
-        readBracket.setupMongoDb("mongodb://localhost:27017","testDb","testSmashers");
-        
-//
+        readBracket.setupMongoDb("mongodb://localhost:27017", "testDb", "testSmashers");
+
         get("/rank", (req, res) -> readBracket.sortSmashers());
 //
         after((req, res) -> {
@@ -38,15 +37,19 @@ public class TestSpark {
         before("/post", (request, response) -> {
             Boolean authenticated = false;
             String auth = request.headers("Authorization");
-            if(auth != null && auth.startsWith("Basic")) {
+            if (auth != null && auth.startsWith("Basic")) {
                 String b64Credentials = auth.substring("Basic".length()).trim();
                 String credentials = new String(Base64.getDecoder().decode(b64Credentials));
                 System.out.println(credentials);
-                if(credentials.equals("admin:admin")) authenticated = true;
+                if (credentials.equals("admin:admin")) {
+                    authenticated = true;
+                }
             }
-            if(!authenticated) {
+            if (!authenticated) {
                 response.header("WWW-Authenticate", "Basic realm=\"Restricted\"");
-                halt(401, "You are not authorized to make this request. Contact Vdogg, and we'll see what we can do about it.");
+                halt(401,
+                    "You are not authorized to make this request. Contact Vdogg, and we'll see what we can do about "
+                        + "it.");
                 response.status(401);
             }
         });
@@ -59,12 +62,9 @@ public class TestSpark {
         });
     }
 
-
-
     private String sortSmashersByRankDatabase() throws FileNotFoundException {
 
         System.out.println("Outputting db ranks: ");
-        String hei = "";
 
         FindIterable<Document> cursor = mongodbOperations.getCollection().find();
         String serialize = JSON.serialize(cursor);
@@ -86,7 +86,6 @@ public class TestSpark {
     public void postTournamentResults() {
         Main.getHerokuAssignedPort();
         mongodbOperations.setup();
-
     }
 
     public void submitTournament(String tournamentId) throws Exception {

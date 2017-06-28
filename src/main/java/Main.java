@@ -30,23 +30,22 @@ public class Main {
     private MongoCollection<Document> collection;
 
     private String data;
-    //For printing out sorted DB
-    private MongoDatabase database;
-    public static ReadBracket readBracket = new ReadBracket();
+    private static ReadBracket readBracket = new ReadBracket();
 
     public static void main(String[] args) throws IOException {
 
         Main main = new Main();
+
         String localHost = "mongodb://localhost:27017";
-        String prodConnectionUri =
-            "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3";
+//        String prodConnectionUri =
+//            "mongodb://heroku_7btb6zs3:bvh12rab31k58n8ijraufist0@ds157839.mlab.com:57839/heroku_7btb6zs3";
 
         String database = "database";
         String collection = "smashers";
 
         readBracket.setupMongoDb(localHost, database, collection);
+        readBracket.dropDatabase();
 
-        main.getSmashersFromFile();
         port(getHerokuAssignedPort());
 
         get("/rank", (req, res) -> readBracket.sortSmashers());
@@ -83,10 +82,6 @@ public class Main {
         });
 
         exception(Exception.class, (e, req, res) -> e.printStackTrace());
-        //port(9999);
-        // String rankedsmasherunsorted = main.sortSmashersByRankDatabase();
-
-        //get("/rank", (req, res) -> rankedsmasherunsorted);
 
         post("/post", (request, response) -> {
             // Create something
@@ -99,18 +94,12 @@ public class Main {
         });
 
         //Heroku pw: Smashnorgeheroku13
-
-
         get("/rank", (req, res) -> main.sortSmashersByRankDatabase());
-
         get("/", (req, res) -> "Melee rank incoming");
         get("/hello", (req, res) -> "Hello Heroku World");
-
     }
 
-    public static int getHerokuAssignedPort() {
-
-
+    static int getHerokuAssignedPort() {
         ProcessBuilder processBuilder = new ProcessBuilder();
         if (processBuilder.environment().get("PORT") != null) {
             System.out.println("SPARK PORT: " + Integer.parseInt(processBuilder.environment().get("PORT")));
@@ -123,12 +112,11 @@ public class Main {
         MongoClientURI uri = new MongoClientURI(host);
         MongoClient mongoClient = new MongoClient(uri);
 
-
-        database = mongoClient.getDatabase("mydb");
+        MongoDatabase database = mongoClient.getDatabase("mydb");
         collection = database.getCollection("Smashers");
     }
 
-    private String getSmashersFromFile() throws IOException {
+    private void getSmashersFromFile() throws IOException {
         String everything;
 
         BufferedReader br = new BufferedReader(new FileReader("smashers.json"));
@@ -147,13 +135,10 @@ public class Main {
         }
 
         String lol = JSON.serialize(everything);
-
-        return lol;
     }
 
     private String sortSmashersByRankDatabase() throws FileNotFoundException {
         System.out.println("Outputting db ranks: ");
-        String hei = "";
 
         FindIterable<Document> cursor = collection.find();
         String serialize = JSON.serialize(cursor);
@@ -162,7 +147,6 @@ public class Main {
         try (PrintWriter out = new PrintWriter("smashers.json")) {
             out.println(serialize);
         }
-
         return serialize;
     }
 

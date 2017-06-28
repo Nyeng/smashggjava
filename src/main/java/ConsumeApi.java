@@ -1,6 +1,7 @@
 import java.io.IOException;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -12,11 +13,11 @@ import org.apache.http.util.EntityUtils;
  */
 public class ConsumeApi {
 
-    public String getBaseApiEndpoint(){
+    private String getBaseApiEndpoint(){
         return "https://api.smash.gg";
     }
 
-    public String returnJsonForGetRequest(String path) {
+     String returnJsonForGetRequest(String path) {
         String uri = getBaseApiEndpoint() + "/" + path;
         String responseBody = null;
 
@@ -31,7 +32,7 @@ public class ConsumeApi {
                 HttpEntity entity = response.getEntity();
                 return entity != null ? EntityUtils.toString(entity) : null;
             } else {
-                throw new org.apache.http.client.ClientProtocolException(
+                throw new ClientProtocolException(
                     "Unexpected response status: " + status + "for path: " + path +
                         "\n whole path:" + getBaseApiEndpoint() + path);
             }
@@ -41,9 +42,6 @@ public class ConsumeApi {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return responseBody;
-
     }
-
 }

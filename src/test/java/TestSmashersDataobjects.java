@@ -172,7 +172,6 @@ public class TestSmashersDataobjects {
 
     @Test
     public void updateObjectWhenDuplicateId() throws Exception {
-
         BasicDBObject searchQuery;
         BasicDBObject updateFields;
 
@@ -211,7 +210,6 @@ public class TestSmashersDataobjects {
             BasicDBObject setQuery = new BasicDBObject();
             setQuery.append("$set", updateFields);
             collection.updateOne(searchQuery, setQuery, new UpdateOptions().upsert(true));
-
         }
 
 

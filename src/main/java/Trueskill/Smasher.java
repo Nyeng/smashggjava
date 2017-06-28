@@ -47,7 +47,6 @@ public class Smasher<S> extends Player {
         this.entrantId = entrantId;
     }
 
-
     public double getConservativeStandardDeviationMultiplier() {
         return conservativeStandardDeviationMultiplier;
     }
@@ -59,10 +58,6 @@ public class Smasher<S> extends Player {
 
     public double getDeviation() {
         return deviation;
-    }
-
-    public Rating setRating(Rating rating){
-        return rating;
     }
 
 
