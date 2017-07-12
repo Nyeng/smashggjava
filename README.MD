@@ -1,3 +1,4 @@
+
 # Norwegian Smash Ranking API #
 
 This is mostly a sample project for learning purposes
@@ -13,6 +14,7 @@ Ideas:
 * Swagger support? //nice, but not prioritized
 
 ## TODOs ##
+- [ ] Remove try/catches that take up 2 much in resources
 - [x] Iterate Smash.gg's bracket API
 - [x] Find a rank api to use as baseline for ranking players (JSkills)
 - [ ] Store player data to MongoDB: started, not done prototyping
